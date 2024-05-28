@@ -248,7 +248,7 @@ body {
 
 
 /********************************************
- * 글 쓰기 입력 폼
+ * 글 쓰기 및 수정 페이지
  ********************************************/
 #main-area > #content-area > #content-top-menu.reverse{
     justify-content: flex-start;
@@ -284,4 +284,44 @@ body {
 #main-area > #content-area > #content > form > .form-item > textarea{
     height: 200px;
     outline: none;
+}
+
+/********************************************
+ * 글 상세 보기 페이지
+ ********************************************/
+#main-area > #content-area > #content-top-menu.border{
+    border-bottom: 1px solid #94a0b9;
+}
+#main-area > #content-area > #content-top-menu.between{
+    justify-content: space-between;
+}
+#main-area > #content-area > #content-top-menu > #content-info{
+    display: flex;
+    align-items: center;
+}
+#main-area > #content-area > #content-top-menu > h2{
+    /* margin-bottom:10px; */
+}
+#main-area > #content-area > #content-top-menu > #content-info > #profile-img{
+    width: 35px;
+    height: 35px;
+    background-color: #eaeaea;
+    border-radius: 100%;
+    margin-right: 10px;;
+}
+#main-area > #content-area > #content-top-menu > #content-info > #write-info{
+
+}
+#main-area > #content-area > #content-top-menu > #content-info > #write-info > p{
+    margin: 0px;
+}
+#main-area > #content-area > #content-top-menu > #content-info > #write-info > p:first-child{
+    font-weight: bold;
+    color: #142c5c;
+}
+#main-area > #content-area > #content-top-menu > #content-info > #write-info > p:last-child{
+    color: #94a0b9;
+}
+#main-area > #content-area > #content > #text{
+    height: 300px;
 }
