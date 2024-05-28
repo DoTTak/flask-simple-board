@@ -125,11 +125,11 @@ body {
     font-size:14px;
     margin: 0px;
 }
-#main-area > #content-area #content-top-menu{
+#main-area > #content-area > #content-top-menu{
     display: flex;
     justify-content: flex-end;
 }
-#main-area > #content-area #content-top-menu select{
+#main-area > #content-area > #content-top-menu select{
     cursor: pointer;
     padding: 10px 15px;
     box-shadow: none;
@@ -138,15 +138,14 @@ body {
     background-color: #f2f6ff;
     margin-right: 10px
 }
-#main-area > #content-area #content-top-menu input{
+#main-area > #content-area > #content-top-menu input{
     margin: 0;
     padding: 10px 15px;
     background: #f2f6ff;
     border: none;
     border-radius: 10px;
-    margin-right: 10px;
 }
-#main-area > #content-area #content-top-menu button{
+#main-area > #content-area > #content-top-menu button{
     background-color: #275efe;
     color: #fff;
     font-size: 15px;
@@ -155,8 +154,9 @@ body {
     border-radius: 10px;
     border: none;
     cursor: pointer;
+    margin: 0px 10px;
 }
-#main-area > #content-area #content-top-menu button:hover{
+#main-area > #content-area > #content-top-menu button:hover{
     background-color: #0b49ff;
 }
 #main-area > #content-area{
@@ -231,6 +231,7 @@ body {
     border-radius: 10px;
     border: none;
     cursor: pointer;
+    margin: 0px 5px;
 }
 #main-area > #content-area > #content-bottom-menu > button:hover{
     background-color: #0b49ff;
@@ -243,4 +244,38 @@ body {
     align-items: center;
     background-color: #f0f8ff;
     height:10px;
+}
+
+
+/********************************************
+ * 글 쓰기 입력 폼
+ ********************************************/
+#main-area > #content-area > #content-top-menu.reverse{
+    justify-content: flex-start;
+}
+#main-area > #content-area > #content-top-menu h2{
+    color: #142c5c;
+}
+#main-area > #content-area > #content > form > .form-item{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+#main-area > #content-area > #content > form > .form-item > label{
+    font-weight: bold;
+    color: #142c5c;
+    margin-bottom: 5px;
+}
+#main-area > #content-area > #content > form > .form-item > input,
+#main-area > #content-area > #content > form > .form-item > textarea{
+    margin: 0;
+    padding: 10px 15px;
+    background: #f2f6ff;
+    border: none;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+#main-area > #content-area > #content > form > .form-item > textarea{
+    height: 200px;
+    outline: none;
 }
