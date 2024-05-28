@@ -261,10 +261,16 @@ body {
     flex-direction: column;
     margin-bottom: 10px;
 }
+#main-area > #content-area > #content > form > .form-item.disabled{
+    opacity: 0.5;
+}
 #main-area > #content-area > #content > form > .form-item > label{
     font-weight: bold;
     color: #142c5c;
     margin-bottom: 5px;
+}
+#main-area > #content-area > #content > form > .form-item > input[type="text"]:disabled{
+    background-color: #dddfe5;
 }
 #main-area > #content-area > #content > form > .form-item > input,
 #main-area > #content-area > #content > form > .form-item > textarea{
