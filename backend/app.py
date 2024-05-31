@@ -4,19 +4,19 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("pages/index.html")
 
 @app.route('/view')
 def view():
-    return render_template("detail.html")
+    return render_template("pages/detail.html")
 
 @app.route('/write')
 def write():
-    return render_template("write.html")
+    return render_template("pages/write.html")
 
 @app.route('/update')
 def update():
-    return render_template("update.html")
+    return render_template("pages/update.html")
 
 @app.route('/delete')
 def delete():

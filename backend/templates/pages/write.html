@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}글쓰기{% endblock %}
+
+{% block content %}
+<div id="content-top-menu" class="reverse border">
+    <h2>글쓰기</h2>
+</div>
+<div id="content">
+    <form action="">
+        <div class="form-item">
+            <label for="form-title">제목</label>
+            <input type="text" name="form-title" id="form-title" placeholder="제목을 입력하세요.">
+        </div>
+        <div class="form-item">
+            <label for="form-writer">작성자</label>
+            <input type="text" name="form-writer" id="form-writer" placeholder="작성자를 입력하세요.">
+        </div>
+        <div class="form-item">
+            <label for="form-text">내용</label>
+            <textarea name="form-text" id="form-text" placeholder="여기에 내용을 입력하세요."></textarea>
+        </div>
+    </form>
+</div>
+<div id="content-bottom-menu">
+    <button>저장하기</button>
+</div>
+{% endblock %}

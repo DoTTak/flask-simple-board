@@ -1,0 +1,42 @@
+<html>
+
+{% include 'head.html' %}
+
+<body>
+    <div class="wrap">
+        <div id="side-area">
+            <div id="logo-area">
+                <h1>LOGO</h1>
+            </div>
+            <div id="profile-area">
+                <div id="profile-img">
+                </div>
+                <div id="profile-info">
+                    <p>DoTTak</p>
+                </div>
+            </div>
+            <div id="sidebar">
+                <div class="side-item active">Home</div>
+                <div class="side-item">Menu 1</div>
+                <div class="side-item">Menu 2</div>
+                <div class="side-item">Menu 3</div>
+            </div>
+        </div>
+        <div id="main-area">
+            <div id="top-area">
+                <div id="title">
+                    <h2>Board</h2>
+                    <p>This is Simple Board</p>
+                </div>
+            </div>
+            <div id="content-area">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div id="bottom-area">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
