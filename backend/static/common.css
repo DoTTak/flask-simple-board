@@ -116,6 +116,7 @@ input, textarea {
     padding: 10px 0px;
     font-weight: bold;
     cursor: pointer;
+    color: #000000;
 }
 #side-area > #sidebar > .side-item:hover{
     background-color: #f2f6ff;
