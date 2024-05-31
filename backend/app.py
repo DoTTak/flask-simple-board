@@ -1,10 +1,11 @@
 from flask import Flask, render_template
+from test_data import test_posts
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template("pages/index.html")
+    return render_template("pages/index.html", posts=test_posts)
 
 @app.route('/view')
 def view():

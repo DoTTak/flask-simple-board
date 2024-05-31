@@ -26,36 +26,16 @@
             </tr>
         </thead>
         <tbody>
+            {% for post in posts %}
+            {# 
             <tr>
                 <td>1</td><td>제목1</td><td>2024-05-27</td><td>작성자1</td>
             </tr>
+            #}
             <tr>
-                <td>2</td><td>제목2</td><td>2024-05-27</td><td>작성자2</td>
+                <td>{{ post.index }}</td><td>{{ post.title }}</td><td>{{ post.created_at }}</td><td>{{ post.author }}</td>
             </tr>
-            <tr>
-                <td>3</td><td>제목3</td><td>2024-05-27</td><td>작성자3</td>
-            </tr>
-            <tr>
-                <td>4</td><td>제목4</td><td>2024-05-27</td><td>작성자4</td>
-            </tr>
-            <tr>
-                <td>5</td><td>제목5</td><td>2024-05-27</td><td>작성자5</td>
-            </tr>
-            <tr>
-                <td>6</td><td>제목6</td><td>2024-05-27</td><td>작성자6</td>
-            </tr>
-            <tr>
-                <td>7</td><td>제목7</td><td>2024-05-27</td><td>작성자7</td>
-            </tr>
-            <!-- <tr>
-                <td>8</td><td>제목8</td><td>2024-05-27</td><td>작성자8</td>
-            </tr>
-            <tr>
-                <td>9</td><td>제목9</td><td>2024-05-27</td><td>작성자9</td>
-            </tr>
-            <tr>
-                <td>10</td><td>제목10</td><td>2024-05-27</td><td>작성자10</td>
-            </tr> -->
+            {% endfor %}
         </tbody>
     </table>
 </div>

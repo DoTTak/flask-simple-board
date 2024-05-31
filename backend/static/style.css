@@ -25,6 +25,9 @@
     background-color: #f4f7f9;
     color: #8793ab;
 }
+#main-area > #content-area > #content > table > tbody tr{
+    cursor: pointer;
+}
 #main-area > #content-area > #content > table > tbody tr:nth-child(2n){ /* 짝수 행 색 변환 */
     background-color: #f9fbfc;
 }
