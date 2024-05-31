@@ -1,0 +1,178 @@
+/********************************************
+ * Reset 관련
+ ********************************************/
+table { /* ref. https://kcmschool.com/106 */
+    padding:0;
+    border:0;
+    border-spacing:0px;
+    border-collapse:collapse;
+}
+a { /* ref. https://itmore.tistory.com/entry/CSS-a태그앵커태그-리셋 */
+    outline: none;
+    text-decoration: none; color:#fff;
+}
+table th,
+table td {
+    padding:0;
+}
+select {
+    outline: 0;
+    /* 화살표 위치이동 ref. https://stackoverflow.com/questions/42516658/down-arrow-on-active-tab-without-using-images-but-only-css-and-jquery */
+    border-right: 10px solid;
+    border-color: transparent;
+}
+input {
+    outline: 0;
+}
+body {
+    padding: 10px;
+    background-color: #e1ebf7;
+}
+
+/********************************************
+ * 요소 UI 스타일 관련
+ ********************************************/
+/* Button */
+button {
+    background-color: #275efe;
+    color: #fff;
+    font-size: 15px;
+    padding: 10px 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    margin: 0px 10px;
+}
+button:hover {
+    background-color: #0b49ff;
+}
+
+/* input, textarea */
+input, textarea {
+    margin: 0;
+    padding: 10px 15px;
+    background: #f2f6ff;
+    border: none;
+    border-radius: 10px;
+}
+
+/********************************************
+ * 공통 영역 UI 스타일 관련
+ ********************************************/
+.wrap{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    background-color: #ffffff;
+}
+/* Side Area */
+#side-area{
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+}
+#side-area > div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#side-area > #logo-area > h1{
+    color: #2a61ff;
+}
+#side-area > #profile-area{
+    display: flex;
+    flex-direction: row;
+    background-color: #f2f6ff;
+    padding: 5px 5px;
+    color: #142c5c;
+    border-radius: 50px;
+    margin: 0px 10px 0px 30px; /* side-item 좌측 여백이 20px이라 10px + 20px */
+    width: 180px;
+    align-self: center;
+}
+#side-area > #profile-area > #profile-info{
+    font-weight: bold;
+}
+#side-area > #profile-area > #profile-img{
+    width: 50px;
+    height: 50px;
+    background-color: #eaeaea;
+    border-radius: 100%;
+    margin-right: 10px;;
+}
+#side-area > #sidebar{
+    flex :1;
+    padding: 20px 0px 0px 20px;
+    font-size: 15px;
+}
+#side-area > #sidebar > .side-item{
+    height:30px;
+    width:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0px;
+    font-weight: bold;
+    cursor: pointer;
+}
+#side-area > #sidebar > .side-item:hover{
+    background-color: #f2f6ff;
+    color: #2a61ff;
+}
+#side-area > #sidebar > .side-item.active{
+    background-color: #f2f6ff;
+    color: #2a61ff;
+    border-left: 3px solid #2a61ff;
+}
+
+/* Main Area */
+#main-area{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding:20px;
+    background: #f2f6ff;
+    border-radius: 0px 50px 50px 0px;
+}
+#main-area > #top-area{
+    display: flex;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom:20px;
+}
+#main-area > #top-area > #title > h2{
+    color: #142c5c;
+    margin: 0px;
+    font-size:23px;
+}
+#main-area > #top-area > #title > p{
+    color: #94a0b9;
+    font-size:14px;
+    margin: 0px;
+}
+#main-area > #content-area > #content-top-menu{
+    display: flex;
+    justify-content: flex-end;
+}
+#main-area > #content-area > #content-top-menu select{
+    cursor: pointer;
+    padding: 10px 15px;
+    box-shadow: none;
+    border-radius: 10px;
+    background-color: #f2f6ff;
+    margin-right: 10px
+}
+#main-area > #content-area{
+    display: flex;
+    border-radius: 10px;
+    background: #FFFFFF;
+    padding: 20px;
+    flex-direction: column;
+}
+#main-area > #content-area > #content{
+    width: 100%;
+    margin: 20px 0px;
+}

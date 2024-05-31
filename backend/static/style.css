@@ -1,0 +1,131 @@
+/********************************************
+ * 글 목차 페이지
+ ********************************************/
+#main-area > #content-area > #content > table{
+    width: 100%;
+    /* height: 450px; */
+}
+#main-area > #content-area > #content > table th,
+#main-area > #content-area > #content > table td{
+    padding: 10px 10px;
+    text-align: center;
+}
+#main-area > #content-area > #content > table td:nth-child(2){
+    text-align: left;
+}
+#main-area > #content-area > #content > table th:first-child,
+#main-area > #content-area > #content > table td:first-child{
+    border-radius: 10px 0px 0px 10px;
+}
+#main-area > #content-area > #content > table th:last-child,
+#main-area > #content-area > #content > table td:last-child{
+    border-radius: 0px 10px 10px 0px;
+}
+#main-area > #content-area > #content > table > thead{
+    background-color: #f4f7f9;
+    color: #8793ab;
+}
+#main-area > #content-area > #content > table > tbody tr:nth-child(2n){ /* 짝수 행 색 변환 */
+    background-color: #f9fbfc;
+}
+#main-area > #content-area > #pagination{
+    display: flex;
+    justify-content: center;
+}
+#main-area > #content-area > #pagination > a{
+    margin: 0px 5px;
+    background: #ffffff;
+    padding: 5px 10px;
+    border-radius: 10px;
+    color: #95a0b6;
+    cursor: pointer;
+    
+}
+#main-area > #content-area > #pagination > a:hover{
+    background-color: #2a61ff;
+    color: #ffffff;
+}
+#main-area > #content-area > #pagination > a.active{
+    background-color: #2a61ff;
+    color: #ffffff;
+}
+#main-area > #content-area > #content-bottom-menu{
+    display: flex;
+    justify-content: flex-end;
+}
+#main-area > #bottom-area{
+    display: flex;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f8ff;
+    height:10px;
+}
+
+
+/********************************************
+ * 글 쓰기 및 수정 페이지
+ ********************************************/
+#main-area > #content-area > #content-top-menu.reverse{
+    justify-content: flex-start;
+}
+#main-area > #content-area > #content-top-menu h2{
+    color: #142c5c;
+}
+#main-area > #content-area > #content > form > .form-item{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+#main-area > #content-area > #content > form > .form-item.disabled{
+    opacity: 0.5;
+}
+#main-area > #content-area > #content > form > .form-item > label{
+    font-weight: bold;
+    color: #142c5c;
+    margin-bottom: 5px;
+}
+#main-area > #content-area > #content > form > .form-item > input[type="text"]:disabled{
+    background-color: #dddfe5;
+}
+#main-area > #content-area > #content > form > .form-item > textarea{
+    height: 200px;
+    outline: none;
+}
+
+/********************************************
+ * 글 상세 보기 페이지
+ ********************************************/
+#main-area > #content-area > #content-top-menu.border{
+    border-bottom: 1px solid #94a0b9;
+}
+#main-area > #content-area > #content-top-menu.between{
+    justify-content: space-between;
+}
+#main-area > #content-area > #content-top-menu > #content-info{
+    display: flex;
+    align-items: center;
+}
+#main-area > #content-area > #content-top-menu > h2{
+    /* margin-bottom:10px; */
+}
+#main-area > #content-area > #content-top-menu > #content-info > #profile-img{
+    width: 35px;
+    height: 35px;
+    background-color: #eaeaea;
+    border-radius: 100%;
+    margin-right: 10px;;
+}
+#main-area > #content-area > #content-top-menu > #content-info > #write-info > p{
+    margin: 0px;
+}
+#main-area > #content-area > #content-top-menu > #content-info > #write-info > p:first-child{
+    font-weight: bold;
+    color: #142c5c;
+}
+#main-area > #content-area > #content-top-menu > #content-info > #write-info > p:last-child{
+    color: #94a0b9;
+}
+#main-area > #content-area > #content > #text{
+    height: 300px;
+}

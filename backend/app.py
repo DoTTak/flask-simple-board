@@ -1,25 +1,26 @@
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return '게시판 글 목록'
+    return render_template("index.html")
 
 @app.route('/view')
 def view():
-    return '글보기'
+    return render_template("detail.html")
 
 @app.route('/write')
 def write():
-    return '글쓰기'
+    return render_template("write.html")
 
 @app.route('/update')
 def update():
-    return '글수정'
+    return render_template("update.html")
 
 @app.route('/delete')
 def delete():
+    # 해당 라우팅은 글삭제 처리만을 작업하므로, 별도의 페이지는 없다.
     return '글삭제'
 
 
