@@ -32,7 +32,7 @@
                 <td>1</td><td>제목1</td><td>2024-05-27</td><td>작성자1</td>
             </tr>
             #}
-            <tr>
+            <tr onclick="location.href='/view'">
                 <td>{{ post.index }}</td><td>{{ post.title }}</td><td>{{ post.created_at }}</td><td>{{ post.author }}</td>
             </tr>
             {% endfor %}
@@ -43,6 +43,6 @@
     <a href="#" class="active">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a><a href="#">다음 ></a>
 </div>
 <div id="content-bottom-menu">
-    <button>글쓰기</button>
+    <button onclick="location.href='/write'">글쓰기</button>
 </div>
 {% endblock %}
