@@ -140,9 +140,48 @@ def write():
         return render_template("pages/write.html")
     else:
         # POST 요청 시 글쓰기(INSERT) 처리
-        title = request.form['title'] # 제목
-        author = request.form['author'] # 작성자
-        content = request.form['content'] # 내용
+        try:
+            title = request.form['form-title'].strip() # 제목, 좌우 공백 제거
+            author = request.form['form-author'].strip() # 작성자, 좌우 공백 제거
+            content = request.form['form-content'].strip() # 내용, 좌우 공백 제거
+        except KeyError:
+            # 요청 데이터가 없는 경우 처리
+            return render_template("pages/write.html", response={"status": "error", "msg": "입력값을 확인해주세요."})
+        
+        # 유효성검사 작성
+        if (title == "" or author == "" or content == ""):
+            return render_template("pages/write.html", response={"status": "error", "msg": "입력값을 확인해주세요."})
+
+        # 데이터베이스 연결자 및 커서 생성
+        conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # 게시글 추가 질의
+        sql = f"""
+        INSERT INTO
+            `posts` (`title`, `content`, `author`)
+        VALUES
+            (%s, %s, %s);
+        """
+        cursor.execute(sql, (title, author, content))
+        conn.commit()
+
+        # 방금 추가한 게시글 ID 가져오는 질의
+        cursor.execute("SELECT LAST_INSERT_ID() as post_id;")
+        post_id = cursor.fetchone()['post_id']
+
+        # 데이터베이스, 커서 연결 해제
+        cursor.close()
+        conn.close()
+
+        # 응답값 작성
+        response = {
+            "status": "success", 
+            "msg": "", 
+            "redirect_url": f"/view/{post_id}"
+        }
+
+        return render_template("pages/write.html", response=response)
 
 @app.route('/update', methods=['GET', 'POST'])
 def update():
