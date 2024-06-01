@@ -210,7 +210,7 @@ def update(post_id):
     try:
         # 조회된 게시글이 없는 경우
         if not post:
-            return render_template("pages/update.html", response={"status": "error", "msg": "존재하지 않는 게시글 입니다."})
+            return render_template("pages/update.html", post=post, response={"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"})
 
         # 조회된 게시글이 있는 경우
         if request.method == 'GET':
@@ -223,11 +223,11 @@ def update(post_id):
                 content = request.form['form-content'].strip() # 내용
             except:
                 # 요청 데이터가 없는 경우 처리
-                return render_template("pages/update.html", response={"status": "error", "msg": "입력값을 확인해주세요."})
+                return render_template("pages/update.html", post=post, response={"status": "error", "msg": "입력값을 확인해주세요."})
 
             # 유효성검사 작성
             if (title == "" or content == ""):
-                return render_template("pages/update.html", response={"status": "error", "msg": "입력값을 확인해주세요."})
+                return render_template("pages/update.html", post=post, response={"status": "error", "msg": "입력값을 확인해주세요."})
             
             # 게시글 수정 질의
             sql = f"""
@@ -249,7 +249,7 @@ def update(post_id):
                 "redirect_url": f"/view/{post_id}"
             }
     
-            return render_template("pages/update.html", response=response)
+            return render_template("pages/update.html", post=post, response=response)
 
     finally:
         # 데이터베이스, 커서 연결 해제
