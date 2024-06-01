@@ -36,4 +36,24 @@
     </div>
 </body>
 
+{% block common_script %}
+{% if response %}
+<script>
+    
+    {% if response.msg%}
+    alert("[{{ response.status }}]\n{{response.msg}}")
+    {% endif %}
+
+    {% if response.redirect_url %}
+    location.href="{{ response.redirect_url }}"
+    {% endif %}
+
+</script>
+{% endif %}
+{% endblock %}
+
+{% block custom_script %}
+<script></script>
+{% endblock %}
+
 </html>
