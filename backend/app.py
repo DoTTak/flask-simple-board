@@ -130,7 +130,11 @@ def view(post_id):
     cursor.close()
     conn.close()
 
-    return render_template("pages/detail.html", post=post)
+    response = {"status": "success", "msg": "", "redirect_url": ""}
+    if not post:
+        response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"}
+
+    return render_template("pages/detail.html", post=post, response=response)
 
 @app.route('/write', methods=['GET', 'POST'])
 def write():

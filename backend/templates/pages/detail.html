@@ -4,23 +4,53 @@
 
 {% block content %}
 <div id="content-top-menu" class="between border">
-    <h2>이것은 제목입니다.</h2>
+    <h2>{{ post.title }}</h2>
     <div id="content-info">
         <div id="profile-img">
         </div>
         <div id="write-info">
-            <p>DoTTak</p>
-            <p>2024.05.29 12:38</p>
+            <p>{{ post.author }}</p>
+            <p>{{ post.created_at }}</p>
         </div>
     </div>
 </div>
 <div id="content">
     <div id="text">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, nisi. Facilis sapiente animi assumenda, reprehenderit est cupiditate. Odio, earum voluptate magni eligendi porro facere laudantium pariatur sunt commodi atque! Doloribus.
+        {{ post.content }}
     </div>
 </div>
 <div id="content-bottom-menu">
-    <button>삭제하기</button>
-    <button onclick="location.href='/update'">수정하기</button>
+    <button id="delete_btn" style="background-color: #ff4444;">삭제하기</button>
+    <button onclick="location.href='/update/{{ post.id }}'">수정하기</button>
 </div>
+{% endblock %}
+
+{% block custom_script %}
+<script>
+
+document.querySelector("#delete_btn").addEventListener("click", function(){
+    if (confirm("정말 삭제하시겠습니까?")){
+        var xhr = new XMLHttpRequest();
+        var formData = new FormData();
+        formData.append('post_id', {{ post.id }})
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === xhr.DONE) {
+                if (xhr.status === 200 || xhr.status === 201) {
+                    var json = JSON.parse(xhr.responseText)
+                    alert("["+json['status']+"]\n"+json['msg'])
+                    location.href=json['redirect_url']
+                } else {
+                    alert("[error]]\n"+xhr.responseText)
+                }
+            }
+        };
+
+        xhr.open('POST', '/delete')
+        xhr.send(formData);
+
+    }
+})
+
+</script>
 {% endblock %}
