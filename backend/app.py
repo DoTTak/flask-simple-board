@@ -1,5 +1,6 @@
 import math
 import pymysql
+import config
 from flask import Flask, render_template, request
 from tests.test_data import test_posts
 
@@ -26,7 +27,7 @@ def index():
     limit_start = (int(page) * PAGE_POST_LIMIT) - PAGE_POST_LIMIT # LIMIT 시작 번호
 
     # 데이터베이스 연결자 및 커서 생성
-    conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+    conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     # 검색어 입력 시
@@ -109,7 +110,7 @@ def index():
 def view(post_id):
 
     # 데이터베이스 연결자 및 커서 생성
-    conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+    conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     # 게시글 검색 질의 수행
@@ -156,7 +157,7 @@ def write():
             return render_template("pages/write.html", response={"status": "error", "msg": "입력값을 확인해주세요."})
 
         # 데이터베이스 연결자 및 커서 생성
-        conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+        conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # 게시글 추가 질의
@@ -190,7 +191,7 @@ def write():
 def update(post_id):
     
     # 데이터베이스 연결자 및 커서 생성
-    conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+    conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     # 게시글 검색 질의 수행
@@ -267,7 +268,7 @@ def delete():
         return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"}
 
     # 데이터베이스 연결자 및 커서 생성
-    conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+    conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
     # 게시글 검색 질의 수행
