@@ -315,4 +315,4 @@ def delete():
         conn.close()
 
 
-app.run(port=8000, debug=True)
+app.run(port=config.FLASK_PORT, debug=bool(config.FLASK_DEBUG))
