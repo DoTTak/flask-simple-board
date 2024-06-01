@@ -80,6 +80,7 @@ input, textarea {
 }
 #side-area > #logo-area > h1{
     color: #2a61ff;
+    cursor: pointer;
 }
 #side-area > #profile-area{
     display: flex;
