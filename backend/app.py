@@ -264,7 +264,7 @@ def delete():
     post_id = request.form.get('post_id', "").strip() # 제목
 
     if post_id == "":
-        return {"status": "error", "msg": "존재하지 않는 게시글 입니다."}
+        return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"}
 
     # 데이터베이스 연결자 및 커서 생성
     conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
@@ -287,7 +287,7 @@ def delete():
     try:
         # 조회된 게시글이 없는 경우
         if not post:
-            return {"status": "error", "msg": "존재하지 않는 게시글 입니다."}
+            return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"}
 
         # 게시글 삭제 질의
         sql = f"""
