@@ -108,7 +108,30 @@ def index():
 
 @app.route('/view/<int:post_id>', methods=['GET'])
 def view(post_id):
-    return render_template("pages/detail.html")
+
+    # 데이터베이스 연결자 및 커서 생성
+    conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # 게시글 검색 질의 수행
+    sql = f"""
+    SELECT
+        * 
+    FROM 
+        posts 
+    WHERE
+        id=%s
+    """
+    cursor.execute(sql, post_id)
+    
+    # 조회된 게시글 정보 가져오기
+    post = cursor.fetchone()
+    
+    # 데이터베이스, 커서 연결 해제
+    cursor.close()
+    conn.close()
+
+    return render_template("pages/detail.html", post=post)
 
 @app.route('/write', methods=['GET', 'POST'])
 def write():
