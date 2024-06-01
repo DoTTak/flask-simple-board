@@ -163,7 +163,7 @@ def write():
         # 게시글 추가 질의
         sql = f"""
         INSERT INTO
-            `posts` (`title`, `content`, `author`)
+            `posts` (`title`, `author`, `content`)
         VALUES
             (%s, %s, %s);
         """
