@@ -20,7 +20,7 @@ def index():
     except:
         # 페이지 번호는 에러 발생 시 무조건 1로 초기화
         page = 1
-    search = request.args.get('search') # 검색어
+    search = request.args.get('search', "") # 검색어
     search_type = request.args.get('type', "search_all") # 검색타입(search_all, search_title, search_content)
     
     # LIMIT 절은 0부터 시작, ex. LIMIT 0 10, LIMIT 10 10
