@@ -103,8 +103,7 @@ def index():
         "has_next": has_next, # 이전 버튼 여부, 이전 페이지 그룹으로 이동
         "has_prev": has_prev # 다음 버튼 여부, 다음 페이지 그룹으로 이동
     }
-    
-    return render_template("pages/index.html", posts=posts, pagination=pagination)
+    return render_template("pages/index.html", posts=posts, search_info={"search": search, "type": search_type}, pagination=pagination)
 
 @app.route('/view/<int:post_id>', methods=['GET'])
 def view(post_id):
