@@ -256,8 +256,59 @@ def update(post_id):
 @app.route('/delete', methods=['POST'])
 def delete():
     # 해당 라우팅은 글삭제 처리만을 작업하므로, 별도의 페이지는 없다.
-    post_id = request.form['id'] # 글번호
-    return '글삭제'
+    # 글 삭제는 Ajax방식으로 요청
+    
+    post_id = request.form.get('post_id', "").strip() # 제목
+
+    if post_id == "":
+        return {"status": "error", "msg": "존재하지 않는 게시글 입니다."}
+
+    # 데이터베이스 연결자 및 커서 생성
+    conn = pymysql.connect(host="localhost", user="root", password ='!root1234', db='flask-simple-board', charset='utf8')
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # 게시글 검색 질의 수행
+    sql = f"""
+    SELECT
+        * 
+    FROM 
+        posts 
+    WHERE
+        id=%s
+    """
+    cursor.execute(sql, post_id)
+    
+    # 조회된 게시글 정보 가져오기
+    post = cursor.fetchone()
+
+    try:
+        # 조회된 게시글이 없는 경우
+        if not post:
+            return {"status": "error", "msg": "존재하지 않는 게시글 입니다."}
+
+        # 게시글 삭제 질의
+        sql = f"""
+        DELETE FROM
+            `posts`
+        WHERE
+            id = %s;
+        """
+        cursor.execute(sql, (post_id))
+        conn.commit()
+
+        # 응답값 작성
+        response = {
+            "status": "success", 
+            "msg": "삭제되었습니다.", 
+            "redirect_url": f"/" # 삭제는 다시 홈으로 이동
+        }
+
+        return response
+
+    finally:
+        # 데이터베이스, 커서 연결 해제
+        cursor.close()
+        conn.close()
 
 
 app.run(port=8000, debug=True)
