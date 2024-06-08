@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <title>Flask Simple Board</title>
+    <link rel="stylesheet" href="static/common.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <div id="main-area" style="justify-content: center;">
+            <div id="content-area">
+                <div id="content-top-menu" class="center">
+                    <h2>회원가입</h2>
+                </div>
+                <div id="content">
+                    <form action="">
+                        <div class="form-item">
+                            <label for="form-email">아이디(이메일)</label>
+                            <div class="form-item-set">
+                                <input type="text" name="form-email" id="form-email" placeholder="이메일을 입력하세요." style="width: 270px;">
+                                <button type="button" onclick="duplication_check()">중복확인</button>
+                            </div>
+                            <div class="form-item-sub">
+                                <div id="form-email-auth-area">
+                                    <input type="text" name="form-email-auth" id="form-email-auth" placeholder="인증번호 6자리를 입력해주세요." style="width: 200px;">
+                                    <span id="form-email-auth-timer">(남은시간 05:00)</span>
+                                </div>
+                                <button type="button" id="mail_auth_btn">인증</button>
+                                <button type="button" id="re_send_mail_btn" onclick="send_mail()" style="display: none;">메일 재전송</button>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label for="form-password">비밀번호</label>
+                            <input type="password" name="form-password" id="form-password" placeholder="비밀번호를 입력하세요.">
+                        </div>
+                        <div class="form-item">
+                            <label for="form-password2">비밀번호 확인</label>
+                            <input type="password" name="form-password2" id="form-password2" placeholder="비밀번호를 한번 더 입력하세요.">
+                        </div>
+                        <div class="form-item">
+                            <label for="form-name">이름(별명)</label>
+                            <input type="text" name="form-name" id="form-name" placeholder="이름을 입력하세요.">
+                        </div>
+                        <div class="form-item">
+                            <label for="form-school">학교</label>
+                            <input type="text" name="form-school" id="form-school" placeholder="학교를 입력하세요.">
+                        </div>
+                    </form>
+                </div>
+                <div id="content-bottom-menu">
+                    <button>취소</button>
+                    <button>가입</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+function duplication_check(){
+    if(confirm("사용 가능한 이메일 주소입니다.\n사용하시겠습니까?")){
+        send_mail()
+    }
+}
+
+function send_mail(){
+    alert('인증메일이 발송되었습니다.')
+
+    // 이메일 인증번호 입력 폼 show
+    document.getElementsByClassName("form-item-sub")[0].setAttribute("style", "display: flex")
+    document.getElementById("mail_auth_btn").setAttribute("style", "display: block")
+    document.getElementById("re_send_mail_btn").setAttribute("style", "display: none")
+    
+    var timer = 300 // 이메일 인증 시간 셋팅 300초 (5분)
+    var interval = setInterval(function() {
+        var minutes = parseInt(timer / 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes
+        var seconds = parseInt(timer % 60, 10);
+        seconds = seconds < 10 ? "0" + seconds : seconds
+
+        var text = `(남은시간 ${minutes}:${seconds})`
+        document.getElementById("form-email-auth-timer").textContent = text
+
+        if(--timer < 0){
+            clearInterval(interval);
+            alert('시간이 만료되었습니다.\n인증을 다시 받아주세요.')
+            // 이메일 인증 disable 처리
+            document.getElementById("form-email-auth-area").className = "disabled"
+            document.getElementById("mail_auth_btn").setAttribute("style", "display: none")
+            document.getElementById("re_send_mail_btn").setAttribute("style", "display: block")
+            document.getElementById("form-email-auth").disabled = true;
+            document.getElementById("form-email-auth").placeholder = "인증을 다시 받아주세요.";
+        }
+    }, 1000);
+}
+
+</script>
+</html>
