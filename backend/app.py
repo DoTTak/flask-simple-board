@@ -34,10 +34,13 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
-        print(session)
         # 세션 초기화
         session.clear()
         return render_template("pages/register.html")
+    else:
+        print(session)
+        return "Hello"
+
 
 @app.route('/email_check', methods=['POST'])
 def email_check():
@@ -129,7 +132,12 @@ def email_auth():
     if not session.get('is_send_email') or session.get(f'time_{email}') != token:
         session.clear()
         return {"status": "error", "msg": "이메일 인증 단계에 문제가 발생됐습니다.\n처음부터 다시 시도해주세요.", "redirect_url": "/register"}
-    
+
+    # 이메일 인증번호 만료
+    if time.time() - float(session.get(f'time_{email}')) > 300:
+        session.clear()
+        return {"status": "error", "msg": "이메일 인증 시간이 만료되었습니다.\n처음부터 다시 시도해주세요.", "redirect_url": "/register"}
+
     # 인증메일 검증
     if session.get(f'otp_{email}', None) == email_auth:
         session['is_email_auth'] = True
