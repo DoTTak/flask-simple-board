@@ -4,7 +4,7 @@
 
 {% block content %}
 <div id="content-top-menu">
-    <form id="form-search" action="/" method="get">
+    <form id="form-search" action="/posts" method="get">
         <select name="type" id="">
             <option value="search_all" {% if search_info.type == "seasrch_all" %} selected {% endif %}>전체</option>
             <option value="search_title" {% if search_info.type == "search_title" %} selected {% endif %}>제목</option>
@@ -34,7 +34,7 @@
                 <td></td><td>제목1</td><td>2024-05-27</td><td>작성자1</td>
             </tr>
             #}
-            <tr onclick="location.href='/view/{{ post.id }}'">
+            <tr onclick="location.href='/posts/view/{{ post.id }}'">
                 <td>{{ post.id }}</td><td>{{ post.title }}</td><td>{{ post.created_at }}</td><td>{{ post.author }}</td>
             </tr>
             {% endfor %}
@@ -43,16 +43,16 @@
 </div>
 <div id="pagination">
     {% if pagination.has_prev %}
-    <a href="?page={{ pagination.page_group_start - 1 }}&type={{ search_info.type }}&search={{ search_info.search }}">&lt; 이전</a>
+    <a href="/posts?page={{ pagination.page_group_start - 1 }}&type={{ search_info.type }}&search={{ search_info.search }}">&lt; 이전</a>
     {% endif %}
     {% for page in range(pagination.page_group_start - 1, pagination.page_group_end) %}
-    <a href="?page={{ page + 1 }}&type={{ search_info.type }}&search={{ search_info.search }}" class="{% if pagination.current_page == page + 1 %}active{% endif %}">{{ page + 1 }}</a>
+    <a href="/posts?page={{ page + 1 }}&type={{ search_info.type }}&search={{ search_info.search }}" class="{% if pagination.current_page == page + 1 %}active{% endif %}">{{ page + 1 }}</a>
     {% endfor %}
     {% if pagination.has_next %}
-    <a href="?page={{ pagination.page_group_end + 1 }}&type={{ search_info.type }}&search={{ search_info.search }}">다음 &gt;</a>
+    <a href="/posts?page={{ pagination.page_group_end + 1 }}&type={{ search_info.type }}&search={{ search_info.search }}">다음 &gt;</a>
     {% endif %}
 </div>
 <div id="content-bottom-menu">
-    <button onclick="location.href='/write'">글쓰기</button>
+    <button onclick="location.href='/posts/write'">글쓰기</button>
 </div>
 {% endblock %}

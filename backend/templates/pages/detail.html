@@ -21,7 +21,7 @@
 </div>
 <div id="content-bottom-menu">
     <button id="delete_btn" style="background-color: #ff4444;">삭제하기</button>
-    <button onclick="location.href='/update/{{ post.id }}'">수정하기</button>
+    <button onclick="location.href='/posts/update/{{ post.id }}'">수정하기</button>
 </div>
 {% endblock %}
 
@@ -46,7 +46,7 @@ document.querySelector("#delete_btn").addEventListener("click", function(){
             }
         };
 
-        xhr.open('POST', '/delete')
+        xhr.open('POST', '/posts/delete')
         xhr.send(formData);
 
     }

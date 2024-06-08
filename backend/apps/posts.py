@@ -132,7 +132,7 @@ def view(post_id):
 
     response = {"status": "success", "msg": "", "redirect_url": ""}
     if not post:
-        response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"}
+        response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
 
     return render_template("pages/detail.html", post=post, response=response)
 
@@ -181,7 +181,7 @@ def write():
         response = {
             "status": "success", 
             "msg": "", 
-            "redirect_url": f"/view/{post_id}"
+            "redirect_url": f"/posts/view/{post_id}"
         }
 
         return render_template("pages/write.html", response=response)
@@ -210,7 +210,7 @@ def update(post_id):
     try:
         # 조회된 게시글이 없는 경우
         if not post:
-            return render_template("pages/update.html", post=post, response={"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"})
+            return render_template("pages/update.html", post=post, response={"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"})
 
         # 조회된 게시글이 있는 경우
         if request.method == 'GET':
@@ -246,7 +246,7 @@ def update(post_id):
             response = {
                 "status": "success", 
                 "msg": "", 
-                "redirect_url": f"/view/{post_id}"
+                "redirect_url": f"/posts/view/{post_id}"
             }
     
             return render_template("pages/update.html", post=post, response=response)
@@ -264,7 +264,7 @@ def delete():
     post_id = request.form.get('post_id', "").strip() # 제목
 
     if post_id == "":
-        return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"}
+        return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
 
     # 데이터베이스 연결자 및 커서 생성
     conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
@@ -287,7 +287,7 @@ def delete():
     try:
         # 조회된 게시글이 없는 경우
         if not post:
-            return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/"}
+            return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
 
         # 게시글 삭제 질의
         sql = f"""
@@ -303,7 +303,7 @@ def delete():
         response = {
             "status": "success", 
             "msg": "삭제되었습니다.", 
-            "redirect_url": f"/" # 삭제는 다시 홈으로 이동
+            "redirect_url": f"/posts" # 삭제는 다시 홈으로 이동
         }
 
         return response

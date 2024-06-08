@@ -7,7 +7,7 @@
     <h2>글수정</h2>
 </div>
 <div id="content">
-    <form id="form-update" action="/update/{{ post.id }}" method="post", onsubmit="test()">
+    <form id="form-update" action="/posts/update/{{ post.id }}" method="post", onsubmit="test()">
         <div class="form-item">
             <label for="form-title">제목</label>
             <input type="text" name="form-title" id="form-title" placeholder="제목을 입력하세요." value="{{ post.title }}">
