@@ -34,7 +34,7 @@
 </div>
 <div id="content-bottom-menu">
     <button id="delete_btn" style="background-color: #ff4444;">삭제하기</button>
-    <button onclick="location.href='/posts/update/{{ post.id }}'">수정하기</button>
+    <button onclick="location.href='/posts/update/{{ post.post_id }}'">수정하기</button>
 </div>
 {% endblock %}
 
@@ -45,7 +45,7 @@ document.querySelector("#delete_btn").addEventListener("click", function(){
     if (confirm("정말 삭제하시겠습니까?")){
         var xhr = new XMLHttpRequest();
         var formData = new FormData();
-        formData.append('post_id', {{ post.id }})
+        formData.append('post_id', {{ post.post_id }})
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === xhr.DONE) {

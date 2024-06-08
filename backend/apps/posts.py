@@ -319,6 +319,15 @@ def delete():
         if not post:
             return {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
 
+        # 기존 저장 파일 삭제
+        sql = f"""
+        SELECT * FROM `uploads` WHERE post_id=%s
+        """
+        cursor.execute(sql, (post_id))
+        upload_list = cursor.fetchall()
+        for upload_file in upload_list:
+            os.remove(upload_file['file_path'])
+
         # 게시글 삭제 질의
         sql = f"""
         DELETE FROM
@@ -335,7 +344,6 @@ def delete():
             "msg": "삭제되었습니다.", 
             "redirect_url": f"/posts" # 삭제는 다시 홈으로 이동
         }
-
         return response
 
     finally:
