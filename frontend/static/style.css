@@ -183,6 +183,40 @@
 #main-area > #content-area > #content-top-menu > #content-info > #write-info > p:last-child{
     color: #94a0b9;
 }
+#main-area > #content-area > #content > #files_area{
+}
+#main-area > #content-area > #content > #files_area > p{
+    font-weight: bold;
+    color: #142c5c;
+    margin: 0px;
+    margin-bottom: 5px;
+}
+#main-area > #content-area > #content > #files_area > .files_insert_area{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: flex-start;
+    margin: 0;
+    padding: 10px 15px;
+    background: #f2f6ff;
+    border: none;
+    border-radius: 10px;
+    min-height: 50px;
+}
+#main-area > #content-area > #content > #files_area > .files_insert_area > .file-box{
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    margin: 3px;
+}
+#main-area > #content-area > #content > #files_area > .files_insert_area > .file-box > p{
+    margin: 0px;
+    background: #95a0b6;
+    padding: 5px;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+}
 #main-area > #content-area > #content > #text{
     height: 300px;
 }
