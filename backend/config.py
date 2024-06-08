@@ -3,6 +3,15 @@ import os
 # Flask 환경설정
 FLASK_PORT = os.getenv("FLASK_PORT", 80)
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", 1)
+SECRET_KEY = os.getenv("SECRET_KEY", "SECRET_KEY")
+
+# 이메일 정보
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 587
+MAIL_USERNAME = 'flaskmailtest6@gmail.com'
+MAIL_PASSWORD = 'pxnoobhjuxdywdyu'
+MAIL_USE_TLS = True
+MAIL_USE_SSL = False
 
 # DB 정보
 # DB_HOST = os.getenv("DB_HOST", "host.docker.internal")

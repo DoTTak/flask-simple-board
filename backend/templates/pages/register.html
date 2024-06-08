@@ -71,34 +71,39 @@ function duplication_check(){
 }
 
 function send_mail(email){
-    alert('인증메일이 발송되었습니다.')
-
-    // 이메일 인증번호 입력 폼 show
-    document.getElementsByClassName("form-item-sub")[0].setAttribute("style", "display: flex")
-    document.getElementById("mail_auth_btn").setAttribute("style", "display: block")
-    document.getElementById("re_send_mail_btn").setAttribute("style", "display: none")
-    
-    var timer = 300 // 이메일 인증 시간 셋팅 300초 (5분)
-    var interval = setInterval(function() {
-        var minutes = parseInt(timer / 60, 10);
-        minutes = minutes < 10 ? "0" + minutes : minutes
-        var seconds = parseInt(timer % 60, 10);
-        seconds = seconds < 10 ? "0" + seconds : seconds
-
-        var text = `(남은시간 ${minutes}:${seconds})`
-        document.getElementById("form-email-auth-timer").textContent = text
-
-        if(--timer < 0){
-            clearInterval(interval);
-            alert('시간이 만료되었습니다.\n인증을 다시 받아주세요.')
-            // 이메일 인증 disable 처리
-            document.getElementById("form-email-auth-area").className = "disabled"
-            document.getElementById("mail_auth_btn").setAttribute("style", "display: none")
-            document.getElementById("re_send_mail_btn").setAttribute("style", "display: block")
-            document.getElementById("form-email-auth").disabled = true;
-            document.getElementById("form-email-auth").placeholder = "인증을 다시 받아주세요.";
+    var data = {"email": email}
+    ajax("POST", "{{ url_for('email_verify') }}", data, function(response){
+        if(response.data.result){
+            alert(response.msg) // 인증메일이 발송되었습니다.
+            
+            // 이메일 인증번호 입력 폼 show
+            document.getElementsByClassName("form-item-sub")[0].setAttribute("style", "display: flex")
+            document.getElementById("mail_auth_btn").setAttribute("style", "display: block")
+            document.getElementById("re_send_mail_btn").setAttribute("style", "display: none")
+            
+            var timer = 300 // 이메일 인증 시간 셋팅 300초 (5분)
+            var interval = setInterval(function() {
+                var minutes = parseInt(timer / 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes
+                var seconds = parseInt(timer % 60, 10);
+                seconds = seconds < 10 ? "0" + seconds : seconds
+        
+                var text = `(남은시간 ${minutes}:${seconds})`
+                document.getElementById("form-email-auth-timer").textContent = text
+        
+                if(--timer < 0){
+                    clearInterval(interval);
+                    alert('시간이 만료되었습니다.\n인증을 다시 받아주세요.')
+                    // 이메일 인증 disable 처리
+                    document.getElementById("form-email-auth-area").className = "disabled"
+                    document.getElementById("mail_auth_btn").setAttribute("style", "display: none")
+                    document.getElementById("re_send_mail_btn").setAttribute("style", "display: block")
+                    document.getElementById("form-email-auth").disabled = true;
+                    document.getElementById("form-email-auth").placeholder = "인증을 다시 받아주세요.";
+                }
+            }, 1000);
         }
-    }, 1000);
+    })
 }
 
 </script>
