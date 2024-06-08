@@ -129,3 +129,46 @@
 #main-area > #content-area > #content > #text{
     height: 300px;
 }
+
+/********************************************
+ * 회원가입 페이지
+ ********************************************/
+ #main-area > #content-area > #content-top-menu.center{
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-set{
+    display: flex;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-set > input{
+    /* flex: 1; */
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub{
+    display: none;
+    margin-top: 5px;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area{
+    border-bottom: 1px #e0e0e0 solid;
+    padding-right: 10px;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area.disabled{
+    background: #ececec;
+    border-radius: 10px;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area > input{
+    background: none;
+    font-size: 0.7em;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area > span{
+    font-size: 0.7em;
+    color:#757575;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > button{
+    background: #ffffff;
+    border: 1px solid #275efe;
+    color: #275efe;
+    font-size: 0.7em;
+    padding: 5px 10px;
+    margin: 0px 3px;
+}
