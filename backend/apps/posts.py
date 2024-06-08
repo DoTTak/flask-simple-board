@@ -168,6 +168,9 @@ def write():
         if (title == "" or content == ""):
             return {"status": "error", "msg": "입력값을 확인해주세요."}
 
+        if len(request.files.getlist('file_list')) > 5:
+            return {"status": "error", "msg": "파일은 최대 5개만 업로드 가능합니다."}
+
         # 데이터베이스 연결자 및 커서 생성
         conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -217,25 +220,30 @@ def write():
         return response
 
 @posts_app.route('/update/<int:post_id>', methods=['GET', 'POST'])
+@jwt_required()
 def update(post_id):
-    
     # 데이터베이스 연결자 및 커서 생성
     conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-    # 게시글 검색 질의 수행
+    # 게시글 검색 질의 + 본인 글 확인 수행
     sql = f"""
-    SELECT
-        * 
+    SELECT 
+        posts.id as post_id, title, content, name, posts.created_at
     FROM 
         posts 
-    WHERE
-        id=%s
+    LEFT JOIN 
+        users 
+    ON 
+        posts.user_id = users.id
+    WHERE posts.id=%s AND posts.user_id = %s
     """
-    cursor.execute(sql, post_id)
+    cursor.execute(sql, (post_id, get_jwt_identity()))
     
     # 조회된 게시글 정보 가져오기
     post = cursor.fetchone()
+
+    print(post)
 
     try:
         # 조회된 게시글이 없는 경우
@@ -244,20 +252,49 @@ def update(post_id):
 
         # 조회된 게시글이 있는 경우
         if request.method == 'GET':
+
+            # 업로드 파일 조회
+            sql = f"""
+            SELECT id as file_id, file_name FROM uploads WHERE post_id = %s
+            """
+            cursor.execute(sql, (post['post_id']))
+            upload_list = cursor.fetchall()
+
             # GET 요청 시 글수정 페이지 렌더링
-            return render_template("pages/update.html", post=post)
+            return render_template("pages/update.html", post=post, upload_list=upload_list)
         else:
-            # POST 요청 시 글수정(UPDATE) 처리
+
             try:
                 title = request.form['form-title'].strip() # 제목
                 content = request.form['form-content'].strip() # 내용
             except:
                 # 요청 데이터가 없는 경우 처리
-                return render_template("pages/update.html", post=post, response={"status": "error", "msg": "입력값을 확인해주세요."})
+                return {"status": "error", "msg": "입력값을 확인해주세요."}
 
             # 유효성검사 작성
             if (title == "" or content == ""):
-                return render_template("pages/update.html", post=post, response={"status": "error", "msg": "입력값을 확인해주세요."})
+                return {"status": "error", "msg": "입력값을 확인해주세요."}
+
+            if len(request.files.getlist('file_list')) > 5:
+                return {"status": "error", "msg": "파일은 최대 5개만 업로드 가능합니다."}
+
+            # 파일 업로드 처리
+            for upload_file in request.files.getlist('file_list'):
+                file_name = secure_filename(upload_file.filename)
+                # 파일명 중복 안되게끔 처리
+                new_file_name = str(uuid.uuid4()) + "_" + file_name
+                file_path = os.path.join(config.UPLOAD_DIR, new_file_name)
+                file_size = upload_file.content_length
+                upload_file.save(file_path)
+                # 업로드 기록 남기기
+                sql = f"""
+                INSERT INTO
+                    `uploads` (`file_path`, `file_name`, `file_size`, `post_id`)
+                VALUES
+                    (%s, %s, %s, %s);
+                """
+                cursor.execute(sql, (file_path, file_name, file_size, post_id))
+                conn.commit()
             
             # 게시글 수정 질의
             sql = f"""
@@ -272,19 +309,25 @@ def update(post_id):
             cursor.execute(sql, (title, content, post_id))
             conn.commit()
 
+            cursor.close()
+            conn.close()
+
             # 응답값 작성
             response = {
                 "status": "success", 
-                "msg": "", 
+                "msg": "정상적으로 수정되었습니다.", 
                 "redirect_url": f"/posts/view/{post_id}"
             }
     
-            return render_template("pages/update.html", post=post, response=response)
+            return response
 
     finally:
-        # 데이터베이스, 커서 연결 해제
-        cursor.close()
-        conn.close()
+        try:
+            # 데이터베이스, 커서 연결 해제
+            cursor.close()
+            conn.close()
+        except:
+            pass
 
 @posts_app.route('/delete', methods=['POST'])
 def delete():

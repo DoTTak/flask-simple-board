@@ -1,3 +1,4 @@
+import os
 import re
 import time
 import threading
@@ -112,6 +113,46 @@ def download(upload_id):
     file_path = file_info['file_path']
     file_path = file_path[file_path.find("/")+1:]
     return send_file(file_path, as_attachment=True, download_name=file_info['file_name'])
+
+@app.route('/file_delete/<int:file_id>', methods=['POST'])
+@jwt_required()
+def file_delete(file_id):
+
+    # 데이터베이스 연결자 및 커서 생성
+    conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # 파일 검색 질의(본인 파일 확인)
+    sql=f"""
+    SELECT 
+        uploads.id as file_id,
+        file_path,
+        posts.user_id
+    FROM 
+        uploads 
+    INNER JOIN 
+        posts 
+    ON 
+        posts.id = post_id 
+    WHERE 
+        uploads.id = %s AND posts.user_id = %s
+    """
+    cursor.execute(sql, (file_id, get_jwt_identity()))
+    file_info = cursor.fetchone()
+    
+    # 파일 삭제 처리
+    if file_info:
+        os.remove(file_info['file_path'])
+        sql = f"""
+        DELETE FROM uploads WHERE id = %s
+        """
+        cursor.execute(sql, (file_info['file_id']))
+        conn.commit()
+    
+    cursor.close()
+    conn.close()
+
+    return {"status": "success", "msg": "성공적으로 삭제되었습니다."}
 
 
 @app.route('/')
