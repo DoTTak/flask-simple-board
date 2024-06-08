@@ -1,13 +1,20 @@
 import re
 import time
+import datetime
 from random import randint
 import config
 import pymysql
-from flask import Flask, redirect, request, render_template, session
+from flask import Flask, redirect, request, render_template, session, url_for, make_response
 from flask_mail import Mail, Message
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import (
+    create_access_token, create_refresh_token,
+    get_jwt_identity, get_jwt, jwt_required,
+    set_access_cookies, set_refresh_cookies,
+    JWTManager, exceptions
+)
 from apps.posts import posts_app
 from apps.users import users_app
-from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -26,15 +33,61 @@ app.config['SECRET_KEY'] = config.SECRET_KEY
 app.config['BCRYPT_LEVEL'] = 10
 bcrypt = Bcrypt(app)
 
-@app.route('/')
-def index():
-    return redirect('/posts')
+app.config["JWT_SECRET_KEY"] = config.SECRET_KEY
+app.config["JWT_TOKEN_LOCATION"] = ['cookies'] # 웹 브라우저 사용으로 쿠키 키용
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=1) # Access Token 만료 시간 지정
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=2) # Refresh Token 만료 시간 지정
+jwt = JWTManager(app)
 
+# 인증 실패 시 로그인 페이지로 이동
+@app.errorhandler(exceptions.NoAuthorizationError)
+def handle_auth_error(e):
+    return redirect('/login', code=302)
+
+@app.route('/')
+@jwt_required()
+def index():
+    # Document Root 접속 시 posts로 이동
+    return redirect('/posts')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template("pages/login.html")
+    else:
+        try:
+            email = request.form['form-email']
+            password = request.form['form-password']
+        except:
+            return render_template("pages/login.html", response={"status": "error", "msg": "아이디 또는 비밀번호를 잘못 입력하셨습니다."})
+
+        conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        # 이메일이 존재하는지 확인하기 위한 SQL 구문
+        sql = f"""
+        SELECT * FROM `users` WHERE email=%s
+        """
+        cursor.execute(sql, (email))
+        user = cursor.fetchone()
+
+        # 계정이 없는 경우        
+        if not user or not bcrypt.check_password_hash(user['password'], password):
+            return render_template("pages/login.html", response={"status": "error", "msg": "아이디 또는 비밀번호를 잘못 입력하셨습니다."})
+
+        # 클레임 설정
+        additional_claims = {"user_id": user['id'], "email": user['email'], "name": user['name']}
+        # Access Token 생성
+        access_token = create_access_token(identity=user['id'], additional_claims=additional_claims)
+        # Refresh Token 생성
+        refresh_token = create_refresh_token(identity=user['id'], additional_claims=additional_claims)
+        
+        # Token 쿠키 지정
+        resp = make_response(redirect(url_for('index')))
+        set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
+
+        return resp
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

@@ -9,7 +9,7 @@
                     <h2>로그인</h2>
                 </div>
                 <div id="content">
-                    <form action="">
+                    <form action="/login" method="post" id="form-login">
                         <div class="form-item">
                             <label for="form-password">아이디(이메일)</label>
                             <input type="text" name="form-email" id="form-email" placeholder="이메일을 입력하세요.">
@@ -21,8 +21,8 @@
                     </form>
                 </div>
                 <div id="content-bottom-menu">
-                    <button>회원가입</button>
-                    <button>로그인</button>
+                    <button onclick="location.href='{{ url_for('register') }}'">회원가입</button>
+                    <button type="submit" form="form-login">로그인</button>
                 </div>
             </div>
         </div>

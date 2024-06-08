@@ -2,7 +2,7 @@ import math
 import pymysql
 import config
 from flask import Flask, render_template, request, Blueprint
-
+from flask_jwt_extended import jwt_required
 
 PAGE_POST_LIMIT = 10 # 페이지 당 보여질 게시글의 갯수
 PAGE_GROUP_LIMIT = 5 # 페이지 그룹 당 페이지 갯수, ex. 4인 경우 << 1,2,3,4 >>
@@ -10,6 +10,7 @@ PAGE_GROUP_LIMIT = 5 # 페이지 그룹 당 페이지 갯수, ex. 4인 경우 <<
 posts_app = Blueprint('posts', __name__, template_folder='templates')
 
 @posts_app.route('/', methods=['GET'])
+@jwt_required()
 def index():
     try:
         page = int(request.args.get('page', 1)) # 페이지 번호
