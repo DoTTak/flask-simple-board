@@ -12,7 +12,7 @@
         <div id="profile-img">
         </div>
         <div id="write-info">
-            <p>{{ post.author }}</p>
+            <p>{{ post.name }}</p>
             <p>{{ post.created_at }}</p>
         </div>
     </div>
@@ -24,12 +24,11 @@
     <div id="files_area">
         <p>첨부 파일</p>
         <div class="files_insert_area">
-            <div class="file-box">
-                <p>DoTTak.png</p>
+            {% for upload_file in upload_list %}
+            <div class="file-box" onclick="location.href='{{ url_for('download', upload_id=upload_file.file_id) }}'">
+                <p>{{ upload_file.file_name }}</p>
             </div>
-            <div class="file-box">
-                <p>test.txt</p>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </div>

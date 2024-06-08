@@ -5,7 +5,7 @@ import datetime
 from random import randint
 import config
 import pymysql
-from flask import Flask, redirect, request, render_template, session, url_for, make_response
+from flask import Flask, redirect, request, render_template, session, url_for, make_response, send_file
 from flask_mail import Mail, Message
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
@@ -91,7 +91,29 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original response
         return response
-        
+
+@app.route('/download/<int:upload_id>')
+def download(upload_id):
+
+    # 데이터베이스 연결자 및 커서 생성
+    conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    sql=f"""
+    SELECT * FROM uploads WHERE id=%s
+    """
+    cursor.execute(sql, (upload_id))
+    file_info = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    # 경로 문제(맨 앞 디렉터리 경로 제외)
+    file_path = file_info['file_path']
+    file_path = file_path[file_path.find("/")+1:]
+    return send_file(file_path, as_attachment=True, download_name=file_info['file_name'])
+
+
 @app.route('/')
 @jwt_required()
 def index():

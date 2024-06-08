@@ -118,18 +118,28 @@ def view(post_id):
 
     # 게시글 검색 질의 수행
     sql = f"""
-    SELECT
-        * 
+    SELECT 
+        posts.id as post_id, title, content, name, posts.created_at
     FROM 
         posts 
-    WHERE
-        id=%s
+    LEFT JOIN 
+        users 
+    ON 
+        posts.user_id = users.id 
+    WHERE posts.id=%s
     """
     cursor.execute(sql, post_id)
     
     # 조회된 게시글 정보 가져오기
     post = cursor.fetchone()
     
+    # 업로드 파일 조회
+    sql = f"""
+    SELECT id as file_id, file_name FROM uploads WHERE post_id = %s
+    """
+    cursor.execute(sql, (post['post_id']))
+    upload_list = cursor.fetchall()
+
     # 데이터베이스, 커서 연결 해제
     cursor.close()
     conn.close()
@@ -138,7 +148,7 @@ def view(post_id):
     if not post:
         response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
 
-    return render_template("pages/detail.html", post=post, response=response)
+    return render_template("pages/detail.html", post=post, upload_list=upload_list, response=response)
 
 @posts_app.route('/write', methods=['GET', 'POST'])
 @jwt_required()
