@@ -69,47 +69,29 @@ def handle_token_expired(e):
     unset_jwt_cookies(resp)
     return resp
 
+# 토큰 재발행
+# ref. https://flask-jwt-extended.readthedocs.io/en/stable/refreshing_tokens.html#implicit-refreshing-with-cookies
 @app.after_request
 def refresh_expiring_jwts(response):
     try:
-        exp_timestamp = get_jwt()["exp"]
+        jwt_info = get_jwt()
+        exp_timestamp = jwt_info["exp"]
         now = datetime.datetime.now(datetime.timezone.utc)
         # Access Token 만료시간이 1시간인데, 30분 내에 재 요청 올 경우 Access Token 재발행
         target_timestamp = datetime.datetime.timestamp(now + datetime.timedelta(minutes=30))
         if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
+            additional_claims = {
+                "user_id": jwt_info['user_id'], 
+                "email": jwt_info['email'], 
+                "name": jwt_info['name']
+            }
+            access_token = create_access_token(identity=get_jwt_identity(), additional_claims=additional_claims)
             set_access_cookies(response, access_token)
         return response
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original response
         return response
         
-@app.route('/refresh', methods=['POST'])
-@jwt_required(refresh=True)
-def refresh():
-    # jwt_info = get_jwt()
-    
-    # # 기존의 refresh_token의 jti를 블랙리스트에 추가
-    # black_list[jwt_info['jti']] = jwt_info['exp']
-
-    # identity = get_jwt_identity()
-    # additional_claims = {
-    #     "user_id": jwt_info['user_id'],
-    #     "email": jwt_info['email'],
-    #     "name": jwt_info['name']
-    # }
-
-    # new_access_token = create_access_token(identity=identity, additional_claims=additional_claims)
-    # new_refresh_token = create_refresh_token(identity=identity, additional_claims=additional_claims)
-
-    # # Token 쿠키 지정
-    # resp = make_response({"access_token": new_access_token, "refresh_token": new_refresh_token})
-    # # unset_jwt_cookies(resp)
-    # set_access_cookies(resp, new_access_token)
-    # set_refresh_cookies(resp, new_refresh_token)
-    # return resp
-    return {"status": "success"}
-
 @app.route('/')
 @jwt_required()
 def index():
