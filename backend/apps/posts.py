@@ -204,7 +204,6 @@ def write():
             "msg": "성공적으로 저장되었습니다.", 
             "redirect_url": f"/posts/view/{post_id}"
         }
-
         return response
 
 @posts_app.route('/update/<int:post_id>', methods=['GET', 'POST'])
