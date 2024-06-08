@@ -2,6 +2,7 @@
 
 {% include 'head.html' %}
 
+{% block body %}
 <body>
     <div class="wrap">
         <div id="side-area">
@@ -37,6 +38,7 @@
         </div>
     </div>
 </body>
+{% endblock %}
 
 {% block common_script %}
 {% if response %}

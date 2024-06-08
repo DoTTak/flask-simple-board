@@ -1,90 +1,58 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Flask Simple Board</title>
-    <link rel="stylesheet" href="static/common.css">
-    <link rel="stylesheet" href="static/style.css">
-</head>
+{% block title %}
+<h2>Profile</h2>
+{% endblock %}
 
-<body>
-    <div class="wrap">
-        <div id="side-area">
-            <div id="logo-area">
-                <h1>LOGO</h1>
-            </div>
-            <div id="profile-area">
-                <div id="profile-img">
-                </div>
-                <div id="profile-info">
-                    <p>DoTTak</p>
-                </div>
-            </div>
-            <div id="sidebar">
-                <div class="side-item active">Home</div>
-                <div class="side-item">Menu 1</div>
-                <div class="side-item">Menu 2</div>
-                <div class="side-item">Menu 3</div>
+{% block content %}
+<div id="content-top-menu" class="between border">
+    <h2>DoTTak 프로필 수정</h2>
+</div>
+<div id="content">
+    <form action="" class="profile-area">
+        <div class="form-item image-area">
+            <img src="/static/no-profile.png" alt="" srcset="">
+            <div class="image-form">
+                <label for="form-image">이미지 선택</label>
+                <input type="file" name="form-image" id="form-image">
+                <input type="button" value="변경하기">
             </div>
         </div>
-        <div id="main-area">
-            <div id="top-area">
-                <div id="title">
-                    <h2>Profile</h2>
-                </div>
+        <div class="form-item">
+            <label for="form-name">이름</label>
+            <input type="text" name="form-name" id="form-name" placeholder="이름을 입력하세요.">
+        </div>
+        <div class="form-item">
+            <label for="form-school">학교</label>
+            <input type="text" name="form-school" id="form-school" placeholder="학교를 입력하세요.">
+        </div>
+        <div class="form-item">
+            <label for="form-text">자기소개</label>
+            <textarea name="form-text" id="form-text" placeholder="여기에 자기소개를 입력하세요."></textarea>
+        </div>
+    </form>
+    <!-- <div class="profile-area">
+        <div class="profile-info">
+            <div class="profile-item image-area">
+                <img src="static/no-profile.png" alt="" srcset="">
             </div>
-            <div id="content-area">
-                <div id="content-top-menu" class="between border">
-                    <h2>DoTTak 프로필 수정</h2>
-                </div>
-                <div id="content">
-                    <form action="" class="profile-area">
-                        <div class="form-item image-area">
-                            <img src="static/no-profile.png" alt="" srcset="">
-                            <div class="image-form">
-                                <label for="form-image">이미지 선택</label>
-                                <input type="file" name="form-image" id="form-image">
-                                <input type="button" value="변경하기">
-                            </div>
-                        </div>
-                        <div class="form-item">
-                            <label for="form-name">이름</label>
-                            <input type="text" name="form-name" id="form-name" placeholder="이름을 입력하세요.">
-                        </div>
-                        <div class="form-item">
-                            <label for="form-school">학교</label>
-                            <input type="text" name="form-school" id="form-school" placeholder="학교를 입력하세요.">
-                        </div>
-                        <div class="form-item">
-                            <label for="form-text">자기소개</label>
-                            <textarea name="form-text" id="form-text" placeholder="여기에 자기소개를 입력하세요."></textarea>
-                        </div>
-                    </form>
-                    <!-- <div class="profile-area">
-                        <div class="profile-info">
-                            <div class="profile-item image-area">
-                                <img src="static/no-profile.png" alt="" srcset="">
-                            </div>
-                            <div class="profile-item">
-                                <p class="profile-item-key">이름</p>
-                                <p class="profile-item-value">DoTTak</p>
-                            </div>
-                            <div class="profile-item">
-                                <p class="profile-item-key">학교</p>
-                                <p class="profile-item-value">빡공팟</p>
-                            </div>
-                            <div class="profile-item">
-                                <p class="profile-item-key">자기소개</p>
-                                <p class="profile-item-value" style="height:100px">안녕하세요. 저는 DoTTak 입니다.</p>
-                            </div>
-                        </div>
-                    </div> -->
-                </div>
-                <div id="content-bottom-menu">
-                    <button onclick="history.go(-1)">취소</button>
-                    <button>저장하기</button>
-                </div>
+            <div class="profile-item">
+                <p class="profile-item-key">이름</p>
+                <p class="profile-item-value">DoTTak</p>
+            </div>
+            <div class="profile-item">
+                <p class="profile-item-key">학교</p>
+                <p class="profile-item-value">빡공팟</p>
+            </div>
+            <div class="profile-item">
+                <p class="profile-item-key">자기소개</p>
+                <p class="profile-item-value" style="height:100px">안녕하세요. 저는 DoTTak 입니다.</p>
             </div>
         </div>
-    </div>
-</body>
-</html>
+    </div> -->
+</div>
+<div id="content-bottom-menu">
+    <button onclick="history.go(-1)">취소</button>
+    <button>저장하기</button>
+</div>
+{% endblock %}

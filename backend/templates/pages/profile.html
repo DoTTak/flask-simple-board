@@ -1,67 +1,35 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Flask Simple Board</title>
-    <link rel="stylesheet" href="static/common.css">
-    <link rel="stylesheet" href="static/style.css">
-</head>
+{% block title %}
+<h2>Profile</h2>
+{% endblock %}
 
-<body>
-    <div class="wrap">
-        <div id="side-area">
-            <div id="logo-area">
-                <h1>LOGO</h1>
+{% block content %}
+<div id="content-top-menu" class="between border">
+    <h2>DoTTak 프로필</h2>
+</div>
+<div id="content">
+    <div class="profile-area">
+        <div class="profile-info">
+            <div class="profile-item image-area">
+                <img src="/static/no-profile.png" alt="" srcset="" style="height:200px; width:200px;">
             </div>
-            <div id="profile-area">
-                <div id="profile-img">
-                </div>
-                <div id="profile-info">
-                    <p>DoTTak</p>
-                </div>
+            <div class="profile-item">
+                <p class="profile-item-key">이름</p>
+                <p class="profile-item-value">DoTTak</p>
             </div>
-            <div id="sidebar">
-                <div class="side-item active">Home</div>
-                <div class="side-item">Menu 1</div>
-                <div class="side-item">Menu 2</div>
-                <div class="side-item">Menu 3</div>
+            <div class="profile-item">
+                <p class="profile-item-key">학교</p>
+                <p class="profile-item-value">빡공팟</p>
             </div>
-        </div>
-        <div id="main-area">
-            <div id="top-area">
-                <div id="title">
-                    <h2>Profile</h2>
-                </div>
-            </div>
-            <div id="content-area">
-                <div id="content-top-menu" class="between border">
-                    <h2>DoTTak 프로필</h2>
-                </div>
-                <div id="content">
-                    <div class="profile-area">
-                        <div class="profile-info">
-                            <div class="profile-item image-area">
-                                <img src="static/no-profile.png" alt="" srcset="" style="height:200px; width:200px;">
-                            </div>
-                            <div class="profile-item">
-                                <p class="profile-item-key">이름</p>
-                                <p class="profile-item-value">DoTTak</p>
-                            </div>
-                            <div class="profile-item">
-                                <p class="profile-item-key">학교</p>
-                                <p class="profile-item-value">빡공팟</p>
-                            </div>
-                            <div class="profile-item">
-                                <p class="profile-item-key">자기소개</p>
-                                <p class="profile-item-value" style="height:100px">안녕하세요. 저는 DoTTak 입니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="content-bottom-menu">
-                    <button>수정하기</button>
-                </div>
+            <div class="profile-item">
+                <p class="profile-item-key">자기소개</p>
+                <p class="profile-item-value" style="height:100px">안녕하세요. 저는 DoTTak 입니다.</p>
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+<div id="content-bottom-menu">
+    <button>수정하기</button>
+</div>
+{% endblock %}

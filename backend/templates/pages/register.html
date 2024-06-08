@@ -1,11 +1,6 @@
-<html>
+{% extends 'base.html' %}
 
-<head>
-    <title>Flask Simple Board</title>
-    <link rel="stylesheet" href="static/common.css">
-    <link rel="stylesheet" href="static/style.css">
-</head>
-
+{% block body %}
 <body>
     <div class="wrap">
         <div id="main-area" style="justify-content: center;">
@@ -56,8 +51,10 @@
         </div>
     </div>
 </body>
-<script>
+{% endblock %}
 
+{% block custom_script %}
+<script>
 function duplication_check(){
     if(confirm("사용 가능한 이메일 주소입니다.\n사용하시겠습니까?")){
         send_mail()
@@ -96,4 +93,4 @@ function send_mail(){
 }
 
 </script>
-</html>
+{% endblock %}
