@@ -1,5 +1,8 @@
 import os
 
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+
 # Flask 환경설정
 FLASK_PORT = os.getenv("FLASK_PORT", 80)
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", 1)

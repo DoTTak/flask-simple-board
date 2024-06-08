@@ -1,8 +1,11 @@
+import os
 import math
 import pymysql
 import config
+import uuid
+from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, Blueprint
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 
 PAGE_POST_LIMIT = 10 # 페이지 당 보여질 게시글의 갯수
 PAGE_GROUP_LIMIT = 5 # 페이지 그룹 당 페이지 갯수, ex. 4인 경우 << 1,2,3,4 >>
@@ -138,41 +141,58 @@ def view(post_id):
     return render_template("pages/detail.html", post=post, response=response)
 
 @posts_app.route('/write', methods=['GET', 'POST'])
+@jwt_required()
 def write():
     if request.method == 'GET':
         # GET 요청 시 글쓰기 페이지 렌더링
         return render_template("pages/write.html")
     else:
-        # POST 요청 시 글쓰기(INSERT) 처리
         try:
             title = request.form['form-title'].strip() # 제목, 좌우 공백 제거
-            author = request.form['form-author'].strip() # 작성자, 좌우 공백 제거
             content = request.form['form-content'].strip() # 내용, 좌우 공백 제거
         except KeyError:
             # 요청 데이터가 없는 경우 처리
-            return render_template("pages/write.html", response={"status": "error", "msg": "입력값을 확인해주세요."})
+            return {"status": "error", "msg": "입력값을 확인해주세요."}
         
         # 유효성검사 작성
-        if (title == "" or author == "" or content == ""):
-            return render_template("pages/write.html", response={"status": "error", "msg": "입력값을 확인해주세요."})
+        if (title == "" or content == ""):
+            return {"status": "error", "msg": "입력값을 확인해주세요."}
 
         # 데이터베이스 연결자 및 커서 생성
         conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-
+        
         # 게시글 추가 질의
         sql = f"""
         INSERT INTO
-            `posts` (`title`, `author`, `content`)
+            `posts` (`title`, `content`, `user_id`)
         VALUES
             (%s, %s, %s);
         """
-        cursor.execute(sql, (title, author, content))
+        cursor.execute(sql, (title, content, get_jwt_identity()))
         conn.commit()
 
         # 방금 추가한 게시글 ID 가져오는 질의
         cursor.execute("SELECT LAST_INSERT_ID() as post_id;")
         post_id = cursor.fetchone()['post_id']
+
+        # 파일 업로드 처리
+        for upload_file in request.files.getlist('file_list'):
+            file_name = secure_filename(upload_file.filename)
+            # 파일명 중복 안되게끔 처리
+            new_file_name = str(uuid.uuid4()) + "_" + file_name
+            file_path = os.path.join(config.UPLOAD_DIR, new_file_name)
+            file_size = upload_file.content_length
+            upload_file.save(file_path)
+            # 업로드 기록 남기기
+            sql = f"""
+            INSERT INTO
+                `uploads` (`file_path`, `file_name`, `file_size`, `post_id`)
+            VALUES
+                (%s, %s, %s, %s);
+            """
+            cursor.execute(sql, (file_path, file_name, file_size, post_id))
+            conn.commit()
 
         # 데이터베이스, 커서 연결 해제
         cursor.close()
@@ -181,11 +201,11 @@ def write():
         # 응답값 작성
         response = {
             "status": "success", 
-            "msg": "", 
+            "msg": "성공적으로 저장되었습니다.", 
             "redirect_url": f"/posts/view/{post_id}"
         }
 
-        return render_template("pages/write.html", response=response)
+        return response
 
 @posts_app.route('/update/<int:post_id>', methods=['GET', 'POST'])
 def update(post_id):

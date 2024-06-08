@@ -10,15 +10,16 @@
     <h2>글쓰기</h2>
 </div>
 <div id="content">
-    <form id="form-write" action="/posts/write" method="post", onsubmit="test()">
+    <form id="form-write" onsubmit="submitForm();return false;">
         <div class="form-item">
             <label for="form-title">제목</label>
             <input type="text" name="form-title" id="form-title" placeholder="제목을 입력하세요.">
         </div>
+        {#
         <div class="form-item">
             <label for="form-author">작성자</label>
             <input type="text" name="form-author" id="form-author" placeholder="작성자를 입력하세요.">
-        </div>
+        </div>#}
         <div class="form-item">
             <label for="form-content">내용</label>
             <textarea name="form-content" id="form-content" placeholder="여기에 내용을 입력하세요."></textarea>
@@ -119,16 +120,30 @@ function deleteFile(num) {
 
 /* 폼 전송 */
 function submitForm() {
-    // 폼데이터 담기
-    var form = document.querySelector("form");
-    var formData = new FormData(form);
+    var formData = new FormData();
+    
+    // 파일 담기
     for (var i = 0; i < filesArr.length; i++) {
         // 삭제되지 않은 파일만 폼데이터에 담기
         if (!filesArr[i].is_delete) {
-            formData.append("attach_file", filesArr[i]);
+            formData.append("file_list", filesArr[i]);
         }
     }
-    console.warn(formData)
+
+    var title = document.getElementById('form-title').value
+    formData.append("form-title", title)
+    var content = document.getElementById('form-content').value
+    formData.append("form-content", content)
+    
+    ajax_form("POST", "{{ url_for('posts.write') }}", formData, "{{ request.cookies.csrf_access_token }}", function(response){
+        if(response.msg){
+            alert(response.msg)
+        }
+        if(response.redirect_url){
+            location.href=response.redirect_url
+        }
+    })
+    
 }
 </script>
 {% endblock %}
