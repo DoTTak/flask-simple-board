@@ -1,7 +1,7 @@
 /********************************************
  * 글 목차 페이지
  ********************************************/
-#main-area > #content-area > #content > table{
+ #main-area > #content-area > #content > table{
     width: 100%;
     /* height: 450px; */
 }
@@ -24,9 +24,6 @@
 #main-area > #content-area > #content > table > thead{
     background-color: #f4f7f9;
     color: #8793ab;
-}
-#main-area > #content-area > #content > table > tbody tr{
-    cursor: pointer;
 }
 #main-area > #content-area > #content > table > tbody tr:nth-child(2n){ /* 짝수 행 색 변환 */
     background-color: #f9fbfc;
@@ -95,6 +92,63 @@
     height: 200px;
     outline: none;
 }
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-top{ /* 파일 폼 */
+    display: flex;
+    margin-bottom: 5px;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-top > #form-files-label{
+    font-weight: bold;
+    color: #142c5c;
+    margin-bottom: 5px;
+    margin-bottom: 0px;
+    display: flex;
+    align-items: center;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-top > label{
+    font-size: 0.8em;
+    padding: 2px 5px;
+    border: 1px solid #94a0b9;
+    color: #142c5c;
+    cursor: pointer;
+    margin-left: 5px;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-top > label:hover {
+    background-color: #eaeaea;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-top > input[type='file']{
+    display: none;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-insert {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: flex-start;
+    margin: 0;
+    padding: 10px 15px;
+    background: #f2f6ff;
+    border: none;
+    border-radius: 10px;
+    min-height: 100px;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-insert .file-box{
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    margin: 3px;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-insert .file-box p{
+    margin: 0px;
+    background: #95a0b6;
+    padding: 5px;
+    border-radius: 10px;
+    color: #ffffff;
+}
+#main-area > #content-area > #content > form > .form-item > #form-files-area > .form-files-insert .file-box a{
+    color: #142c5c;
+    font-size:18px;
+    margin-left: 5px;
+    cursor: pointer;
+}
 
 /********************************************
  * 글 상세 보기 페이지
@@ -129,6 +183,157 @@
 #main-area > #content-area > #content-top-menu > #content-info > #write-info > p:last-child{
     color: #94a0b9;
 }
+#main-area > #content-area > #content > #files_area{
+}
+#main-area > #content-area > #content > #files_area > p{
+    font-weight: bold;
+    color: #142c5c;
+    margin: 0px;
+    margin-bottom: 5px;
+}
+#main-area > #content-area > #content > #files_area > .files_insert_area{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: flex-start;
+    margin: 0;
+    padding: 10px 15px;
+    background: #f2f6ff;
+    border: none;
+    border-radius: 10px;
+    min-height: 50px;
+}
+#main-area > #content-area > #content > #files_area > .files_insert_area > .file-box{
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    margin: 3px;
+}
+#main-area > #content-area > #content > #files_area > .files_insert_area > .file-box > p{
+    margin: 0px;
+    background: #95a0b6;
+    padding: 5px;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+}
 #main-area > #content-area > #content > #text{
     height: 300px;
+}
+
+/********************************************
+ * 회원가입 페이지
+ ********************************************/
+ #main-area > #content-area > #content-top-menu.center{
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-set{
+    display: flex;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-set > input{
+    /* flex: 1; */
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub{
+    display: none;
+    margin-top: 5px;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area{
+    border-bottom: 1px #e0e0e0 solid;
+    padding-right: 10px;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area.disabled{
+    background: #ececec;
+    border-radius: 10px;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area > input{
+    background: none;
+    font-size: 0.7em;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > #form-email-auth-area > span{
+    font-size: 0.7em;
+    color:#757575;
+}
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > button{
+    background: #ffffff;
+    border: 1px solid #275efe;
+    color: #275efe;
+    font-size: 0.7em;
+    padding: 5px 10px;
+    margin: 0px 3px;
+}
+
+/********************************************
+ * 프로필 페이지
+ ********************************************/
+ #main-area > #content-area > #content > .profile-area{}
+ #main-area > #content-area > #content > .profile-area > .profile-info{}
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item{}
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item.image-area{
+    display: flex;
+    justify-content: center;
+}
+#main-area > #content-area > #content > .profile-area > .profile-info > .profile-item.image-area > img{
+    border-radius: 50%;
+}
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item > .profile-item-key{
+    font-weight: bold;
+    color: #142c5c;
+    margin-bottom: 5px;
+ }
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item > .profile-item-value{
+    font-size: 0.9em;
+    margin: 0;
+    padding: 10px 15px;
+    background: #f2f6ff;
+    border: none;
+    border-radius: 10px;
+ }
+ /********************************************
+ * 프로필 수정 페이지
+ ********************************************/
+#main-area > #content-area > #content > form > .form-item.image-area{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#main-area > #content-area > #content > form > .form-item.image-area > img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+#main-area > #content-area > #content > form > .form-item.image-area > .image-form {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#main-area > #content-area > #content > form > .form-item.image-area > .image-form > label {
+    font-size: 0.8em;
+    padding: 5px 10px;
+    border: 1px solid #94a0b9;
+    color: #142c5c;
+    cursor: pointer;
+    margin-right: 5px;
+}
+#main-area > #content-area > #content > form > .form-item.image-area > .image-form > label:hover {
+    background:#eaeaea;
+}
+#main-area > #content-area > #content > form > .form-item.image-area > .image-form > input[type='file'] {
+    display: none;
+}
+#main-area > #content-area > #content > form > .form-item.image-area > .image-form > input[type='button'] {
+    font-size: 0.8em;
+    padding: 5px 10px;
+    /* border: 1px solid #94a0b9; */
+    color: #ffffff;
+    background-color: #275efe;
+    cursor:pointer;
+}
+#main-area > #content-area > #content > form > .form-item.image-area > .image-form > input[type='button']:hover {
+    background-color: #0b49ff;
+}
+#main-area > #content-area > #content > form.profile-area > .form-item > textarea{
+    height:100px;
 }
