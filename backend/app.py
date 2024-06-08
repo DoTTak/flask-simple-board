@@ -37,8 +37,7 @@ bcrypt = Bcrypt(app)
 
 app.config["JWT_SECRET_KEY"] = config.SECRET_KEY
 app.config["JWT_TOKEN_LOCATION"] = ['cookies'] # 웹 브라우저 사용으로 쿠키 키용
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(seconds=30) # Access Token 만료 시간 지정
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(seconds=300) # Refresh Token 만료 시간 지정
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(hours=1) # Access Token 만료 1시간 지정
 jwt = JWTManager(app)
 
 # 만료 시간(ext) 이전에 토큰을 만료시킬 경우(로그아웃, 토큰 재요청)
@@ -48,14 +47,16 @@ black_list = {}
 # 인증 실패 시 로그인 페이지로 이동
 @app.errorhandler(exceptions.NoAuthorizationError)
 def handle_auth_error(e):
-    return render_template('pages/login.html', response={"status": "warning", "msg": "로그인이 필요한 페이지 입니다."})
+    response = {"status": "warning", "msg": "로그인이 필요한 페이지 입니다.", "redirect_url": "/login"}
+    return render_template('pages/login.html', response=response)
 
 # 중복된 토큰 사용 시 로그인 페이지로 이동
 # NOTE: 일반적인 경우 중복된 토큰을 사용할 수 없음 -> 토큰 삭제 
 #        - ex) 만료되기 이전에 로그아웃을 한 뒤, 해당 토큰을 또 재사용한 경우
 @app.errorhandler(exceptions.RevokedTokenError)
 def handle_auth_error(e):
-    resp = make_response(render_template('pages/login.html', response={"status": "warning", "msg": "비정상적인 요청을 하셨습니다.\\n로그인을 다시 해주세요."}))
+    response = {"status": "warning", "msg": "비정상적인 요청을 하셨습니다.\\n로그인을 다시 해주세요.", "redirect_url": "/login"}
+    resp = make_response(render_template('pages/login.html', response=response))
     unset_jwt_cookies(resp)
     return resp
 
@@ -63,54 +64,57 @@ def handle_auth_error(e):
 # NOTE: Access Token은 매 라우팅 요청 시마다 갱신됨 단, @jwt_rquired() 데코레이터가 있는 경우만
 @app.errorhandler(ExpiredSignatureError)
 def handle_token_expired(e):
-    resp = make_response(render_template('pages/login.html', response={"status": "warning", "msg": "로그인 세션 만료\\n로그인을 다시 해주세요."}))
+    response = {"status": "warning", "msg": "로그인 세션 만료\\n로그인을 다시 해주세요.", "redirect_url": "/login"}
+    resp = make_response(render_template('pages/login.html', response=response))
     unset_jwt_cookies(resp)
     return resp
 
-# refresh 동일 기능
-# cookies에 있는 Refresh Token으로 Access Token 요청
-def get_access_token_from_cookies(cookies):
+@app.after_request
+def refresh_expiring_jwts(response):
     try:
-        # Access Token 만료 안된 경우 그냥 반환
-        decoded_access_token = decode_token(cookies['access_token_cookie'])
-        return {"access_token": cookies['access_token_cookie'], "refresh_token": cookie['refresh_token_cookie']}
-    except:
-        try:
-            # Access Token 만료인 경우
-            decoded_refresh_token = decode_token(cookies['refresh_token_cookie'])
-            additional_claims = {
-                "user_id": decoded_refresh_token['user_id'], 
-                "email": decoded_refresh_token['email'], 
-                "name": decoded_refresh_token['name']
-            }
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.datetime.now(datetime.timezone.utc)
+        # Access Token 만료시간이 1시간인데, 30분 내에 재 요청 올 경우 Access Token 재발행
+        target_timestamp = datetime.datetime.timestamp(now + datetime.timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            set_access_cookies(response, access_token)
+        return response
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original response
+        return response
+        
+@app.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    # jwt_info = get_jwt()
+    
+    # # 기존의 refresh_token의 jti를 블랙리스트에 추가
+    # black_list[jwt_info['jti']] = jwt_info['exp']
 
-            # 새로운 토큰 발급
-            new_access_token = create_access_token(
-                identity=decoded_refresh_token['user_id'], 
-                additional_claims=additional_claims)
-            new_refresh_token = create_refresh_token(
-                identity=decoded_refresh_token['user_id'], 
-                additional_claims=additional_claims)
+    # identity = get_jwt_identity()
+    # additional_claims = {
+    #     "user_id": jwt_info['user_id'],
+    #     "email": jwt_info['email'],
+    #     "name": jwt_info['name']
+    # }
 
-            # 기존 토큰은 블랙리스트에 추가
-            black_list[decoded_refresh_token['jti']] = decoded_refresh_token['exp']
+    # new_access_token = create_access_token(identity=identity, additional_claims=additional_claims)
+    # new_refresh_token = create_refresh_token(identity=identity, additional_claims=additional_claims)
 
-            return {"access_token": new_access_token, "refresh_token": new_refresh_token}
-        except:
-            # Refresh Token도 만료인 경우
-            raise exceptions.NoAuthorizationError
+    # # Token 쿠키 지정
+    # resp = make_response({"access_token": new_access_token, "refresh_token": new_refresh_token})
+    # # unset_jwt_cookies(resp)
+    # set_access_cookies(resp, new_access_token)
+    # set_refresh_cookies(resp, new_refresh_token)
+    # return resp
+    return {"status": "success"}
 
 @app.route('/')
 @jwt_required()
 def index():
-    token_info = get_access_token_from_cookies(request.cookies)
-
     # Document Root 접속 시 posts로 이동
-    resp = make_response(redirect('/posts'))
-
-    set_access_cookies(resp, token_info['access_token'])
-    set_refresh_cookies(resp, token_info['refresh_token'])
-    return resp
+    return redirect('/posts')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -344,23 +348,5 @@ def email_auth():
     else:
         return {"status": "success", "msg": "잘못된 인증번호 입니다.", "data": {"result": False}}
 
-@jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
-    # 사용된 토큰 재사용 방지
-    jti = jwt_payload.get("jti")
-    if black_list.get(jti):
-        return True
-    else:
-        return False
-
-def remove_expired_tokens():
-    while True:
-        for jti, exp in list(black_list.items()):
-            print(f"[DELETE] JTI: {jti}, EXP: {datetime.datetime.fromtimestamp(exp)}")
-            if time.time() > exp:
-                del black_list[jti]
-        time.sleep(10)
-
 if __name__ == "__main__":
-    threading.Thread(target=remove_expired_tokens).start()
     app.run(host='0.0.0.0', port=config.FLASK_PORT, debug=bool(config.FLASK_DEBUG))
