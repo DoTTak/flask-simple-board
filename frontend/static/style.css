@@ -172,3 +172,29 @@
     padding: 5px 10px;
     margin: 0px 3px;
 }
+
+/********************************************
+ * 프로필 페이지
+ ********************************************/
+ #main-area > #content-area > #content > .profile-area{}
+ #main-area > #content-area > #content > .profile-area > .profile-info{}
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item{}
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item.image-area{
+    display: flex;
+    justify-content: center;
+}
+#main-area > #content-area > #content > .profile-area > .profile-info > .profile-item.image-area > img{
+    border-radius: 50%;
+}
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item > .profile-item-key{
+    font-weight: bold;
+    color: #142c5c;
+    margin-bottom: 5px;
+ }
+ #main-area > #content-area > #content > .profile-area > .profile-info > .profile-item > .profile-item-value{
+    margin: 0;
+    padding: 10px 15px;
+    background: #f2f6ff;
+    border: none;
+    border-radius: 10px;
+ }
