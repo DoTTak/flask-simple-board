@@ -9,7 +9,7 @@
                     <h2>회원가입</h2>
                 </div>
                 <div id="content">
-                    <form action="">
+                    <form id="form-register" action="/register" method="post">
                         <div class="form-item">
                             <label for="form-email">아이디(이메일)</label>
                             <div class="form-item-set">
@@ -44,8 +44,8 @@
                     </form>
                 </div>
                 <div id="content-bottom-menu">
-                    <button>취소</button>
-                    <button>가입</button>
+                    <button onclick="history.go(-1)">취소</button>
+                    <button type="submit" form="form-register">가입</button>
                 </div>
             </div>
         </div>
@@ -56,12 +56,21 @@
 {% block custom_script %}
 <script>
 function duplication_check(){
-    if(confirm("사용 가능한 이메일 주소입니다.\n사용하시겠습니까?")){
-        send_mail()
-    }
+    var email = document.getElementById("form-email").value
+    var data = {"email": email}
+    ajax("POST", "{{ url_for('email_check') }}", data, function(response){
+        if(response.data.result){
+            if(confirm(response.msg)){
+                send_mail(email)
+            }
+        }else{
+            alert(response.msg)
+        }
+    })
+
 }
 
-function send_mail(){
+function send_mail(email){
     alert('인증메일이 발송되었습니다.')
 
     // 이메일 인증번호 입력 폼 show
