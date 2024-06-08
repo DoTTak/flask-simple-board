@@ -1,5 +1,6 @@
 import re
 import time
+import threading
 import datetime
 from random import randint
 import config
@@ -10,9 +11,10 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     get_jwt_identity, get_jwt, jwt_required,
-    set_access_cookies, set_refresh_cookies,
-    JWTManager, exceptions
+    set_access_cookies, set_refresh_cookies, unset_jwt_cookies,
+    JWTManager, exceptions, decode_token, 
 )
+from jwt.exceptions import ExpiredSignatureError
 from apps.posts import posts_app
 from apps.users import users_app
 
@@ -35,20 +37,80 @@ bcrypt = Bcrypt(app)
 
 app.config["JWT_SECRET_KEY"] = config.SECRET_KEY
 app.config["JWT_TOKEN_LOCATION"] = ['cookies'] # 웹 브라우저 사용으로 쿠키 키용
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=1) # Access Token 만료 시간 지정
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=2) # Refresh Token 만료 시간 지정
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(seconds=30) # Access Token 만료 시간 지정
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(seconds=300) # Refresh Token 만료 시간 지정
 jwt = JWTManager(app)
+
+# 만료 시간(ext) 이전에 토큰을 만료시킬 경우(로그아웃, 토큰 재요청)
+# 아래에 jti(토큰 고유 식별자)를 추가하여 차단할 수 있다.
+black_list = {}
 
 # 인증 실패 시 로그인 페이지로 이동
 @app.errorhandler(exceptions.NoAuthorizationError)
 def handle_auth_error(e):
-    return redirect('/login', code=302)
+    return render_template('pages/login.html', response={"status": "warning", "msg": "로그인이 필요한 페이지 입니다."})
+
+# 중복된 토큰 사용 시 로그인 페이지로 이동
+# NOTE: 일반적인 경우 중복된 토큰을 사용할 수 없음 -> 토큰 삭제 
+#        - ex) 만료되기 이전에 로그아웃을 한 뒤, 해당 토큰을 또 재사용한 경우
+@app.errorhandler(exceptions.RevokedTokenError)
+def handle_auth_error(e):
+    resp = make_response(render_template('pages/login.html', response={"status": "warning", "msg": "비정상적인 요청을 하셨습니다.\\n로그인을 다시 해주세요."}))
+    unset_jwt_cookies(resp)
+    return resp
+
+# Refresh Token 만료 시 로그인 페이지로 이동
+# NOTE: Access Token은 매 라우팅 요청 시마다 갱신됨 단, @jwt_rquired() 데코레이터가 있는 경우만
+@app.errorhandler(ExpiredSignatureError)
+def handle_token_expired(e):
+    resp = make_response(render_template('pages/login.html', response={"status": "warning", "msg": "로그인 세션 만료\\n로그인을 다시 해주세요."}))
+    unset_jwt_cookies(resp)
+    return resp
+
+# refresh 동일 기능
+# cookies에 있는 Refresh Token으로 Access Token 요청
+def get_access_token_from_cookies(cookies):
+    try:
+        # Access Token 만료 안된 경우 그냥 반환
+        decoded_access_token = decode_token(cookies['access_token_cookie'])
+        return {"access_token": cookies['access_token_cookie'], "refresh_token": cookie['refresh_token_cookie']}
+    except:
+        try:
+            # Access Token 만료인 경우
+            decoded_refresh_token = decode_token(cookies['refresh_token_cookie'])
+            additional_claims = {
+                "user_id": decoded_refresh_token['user_id'], 
+                "email": decoded_refresh_token['email'], 
+                "name": decoded_refresh_token['name']
+            }
+
+            # 새로운 토큰 발급
+            new_access_token = create_access_token(
+                identity=decoded_refresh_token['user_id'], 
+                additional_claims=additional_claims)
+            new_refresh_token = create_refresh_token(
+                identity=decoded_refresh_token['user_id'], 
+                additional_claims=additional_claims)
+
+            # 기존 토큰은 블랙리스트에 추가
+            black_list[decoded_refresh_token['jti']] = decoded_refresh_token['exp']
+
+            return {"access_token": new_access_token, "refresh_token": new_refresh_token}
+        except:
+            # Refresh Token도 만료인 경우
+            raise exceptions.NoAuthorizationError
 
 @app.route('/')
 @jwt_required()
 def index():
+    token_info = get_access_token_from_cookies(request.cookies)
+
     # Document Root 접속 시 posts로 이동
-    return redirect('/posts')
+    resp = make_response(redirect('/posts'))
+
+    set_access_cookies(resp, token_info['access_token'])
+    set_refresh_cookies(resp, token_info['refresh_token'])
+    return resp
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -282,4 +344,23 @@ def email_auth():
     else:
         return {"status": "success", "msg": "잘못된 인증번호 입니다.", "data": {"result": False}}
 
-app.run(host='0.0.0.0', port=config.FLASK_PORT, debug=bool(config.FLASK_DEBUG))
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    # 사용된 토큰 재사용 방지
+    jti = jwt_payload.get("jti")
+    if black_list.get(jti):
+        return True
+    else:
+        return False
+
+def remove_expired_tokens():
+    while True:
+        for jti, exp in list(black_list.items()):
+            print(f"[DELETE] JTI: {jti}, EXP: {datetime.datetime.fromtimestamp(exp)}")
+            if time.time() > exp:
+                del black_list[jti]
+        time.sleep(10)
+
+if __name__ == "__main__":
+    threading.Thread(target=remove_expired_tokens).start()
+    app.run(host='0.0.0.0', port=config.FLASK_PORT, debug=bool(config.FLASK_DEBUG))
