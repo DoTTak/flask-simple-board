@@ -34,6 +34,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
+        print(session)
         # 세션 초기화
         session.clear()
         return render_template("pages/register.html")
@@ -41,7 +42,9 @@ def register():
 @app.route('/email_check', methods=['POST'])
 def email_check():
     # 세션 활성화
-    session['is_email_check'] = False
+    session['is_email_check'] = False # 이메일 중복 검사 여부
+    session['is_send_email'] = False # 이메일 전송 여부
+    session['is_email_auth'] = False # 이메일 인증 여부
 
     try:
         email = request.form.get("email", None)
@@ -101,11 +104,37 @@ def email_verify():
     # 인증메일 발송
     session[f'otp_{email}'] = str(randint(100000, 999999))  # 세션에 인증번호 저장
     session[f'time_{email}'] = str(time.time()) # 인증번호 생성 시간 저장
-    session[f'is_send_email'] = True # 이메일 전송 
+    session[f'is_send_email'] = True # 이메일 전송 여부
     msg = Message('[인증메일] 인증메일 발송', sender='flaskmailtest6@gmail.com', recipients=[email])
     msg.body = '인증 번호: '+ session[f'otp_{email}']
     mail.send(msg) # 메일 보내기
-    return {"status": "success", "msg": "인증메일이 발송되었습니다.", "data": {"result": True}}
+    return {"status": "success", "msg": "인증메일이 발송되었습니다.", "data": {"result": True, "token": session[f'time_{email}']}}
 
+@app.route('/email_auth', methods=['POST'])
+def email_auth():
+    try:
+        email = request.form.get("email", None)
+        token = request.form.get("token", None)
+        email_auth = request.form.get("email_auth", None)
+        if not email or not email_auth or not token:
+            return {"status": "error", "msg": "입력값을 확인해주세요."}
+    except:
+        return {"status": "error", "msg": "입력값을 확인해주세요."}
+
+    # 이메일 중복 확인 세션 검증
+    if not session.get('is_email_check', None) or email != session.get('email', None):
+        return {"status": "error", "msg": "이메일 중복확인을 다시 해주세요."}
+    
+    # 이메일 인증 메시지 전송 단계 검증 및 세션 데이터 검증
+    if not session.get('is_send_email') or session.get(f'time_{email}') != token:
+        session.clear()
+        return {"status": "error", "msg": "이메일 인증 단계에 문제가 발생됐습니다.\n처음부터 다시 시도해주세요.", "redirect_url": "/register"}
+    
+    # 인증메일 검증
+    if session.get(f'otp_{email}', None) == email_auth:
+        session['is_email_auth'] = True
+        return {"status": "success", "msg": "메일 인증을 완료했습니다.", "data": {"result": True}}
+    else:
+        return {"status": "success", "msg": "잘못된 인증번호 입니다.", "data": {"result": False}}
 
 app.run(host='0.0.0.0', port=config.FLASK_PORT, debug=bool(config.FLASK_DEBUG))

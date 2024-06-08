@@ -263,7 +263,12 @@
     padding: 5px 10px;
     margin: 0px 3px;
 }
-
+#main-area > #content-area > #content > form > .form-item > .form-item-sub > button.disabled{
+    display: block;
+    background: #f2f6ff;
+    border: none;
+    color: #142c5c;
+}
 /********************************************
  * 프로필 페이지
  ********************************************/
