@@ -123,10 +123,15 @@ def download(upload_id):
             if post_info['user_id'] != get_jwt_identity():
                 return redirect("/")
 
-    # 경로 문제(맨 앞 디렉터리 경로 제외)
-    file_path = file_info['file_path']
-    file_path = file_path[file_path.find("/")+1:]
-    return send_file(file_path, as_attachment=True, download_name=file_info['file_name'])
+    try:
+        # 경로 문제(맨 앞 디렉터리 경로 제외)
+        file_path = file_info['file_path']
+        return_file = send_file(file_path, as_attachment=True, download_name=file_info['file_name'])
+    except:
+        file_path = file_path[file_path.find("/")+1:]
+        return_file = send_file(file_path, as_attachment=True, download_name=file_info['file_name'])
+    finally:
+        return return_file
 
 @app.route('/file_delete/<int:file_id>', methods=['POST'])
 @jwt_required()
