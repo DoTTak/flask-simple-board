@@ -9,8 +9,13 @@
 <div id="content-top-menu" class="between border">
     <h2>{{ post.title }}</h2>
     <div id="content-info">
-        <div id="profile-img">
-        </div>
+        <img id="profile-img" src="
+        {%if post.profile_name %}
+        {{ url_for('users.image_serve', filename = post.profile_name ) }}
+        {% else %}
+        /static/no-profile.png
+        {% endif %}
+        " alt="" srcset="">
         <div id="write-info">
             <p>{{ post.name }}</p>
             <p>{{ post.created_at }}</p>
@@ -33,8 +38,10 @@
     </div>
 </div>
 <div id="content-bottom-menu">
+    {% if user.id == post.user_id %}
     <button id="delete_btn" style="background-color: #ff4444;">삭제하기</button>
     <button onclick="location.href='/posts/update/{{ post.post_id }}'">수정하기</button>
+    {% endif %}
 </div>
 {% endblock %}
 

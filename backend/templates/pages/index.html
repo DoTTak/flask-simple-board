@@ -38,7 +38,7 @@
             </tr>
             #}
             <tr onclick="location.href='/posts/view/{{ post.id }}'">
-                <td>{{ post.id }}</td><td>{{ post.title }}</td><td>{{ post.created_at }}</td><td>{{ post.author }}</td>
+                <td>{{ post.id }}</td><td>{{ post.title }}</td><td>{{ post.created_at }}</td><td>{{ post.user_name }}</td>
             </tr>
             {% endfor %}
         </tbody>

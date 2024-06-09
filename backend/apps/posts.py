@@ -33,6 +33,13 @@ def index():
     conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
+    # 나의 정보 조회
+    sql=f"""
+    SELECT * FROM users WHERE id = %s
+    """
+    cursor.execute(sql, (get_jwt_identity()))
+    user = cursor.fetchone()
+
     # 검색어 입력 시
     if search:
         # 검색 타입 설정
@@ -76,13 +83,21 @@ def index():
         """
         
         cursor.execute(sql, (limit_start))
-    
     # 조회된 게시글 목록
     posts = cursor.fetchall()
     
     # 질의한 쿼리의 전체 갯수 가져오기(limit을 제외한 전체 갯수)
     cursor.execute("SELECT FOUND_ROWS() as total_post_count;")
     total_post_count = cursor.fetchone()['total_post_count'] # 질의 결과의 전체 게시글 수
+
+    # 작성자 가져오기
+    for post in posts:
+        if post['user_id']:
+            sql = "SELECT name FROM users WHERE id = %s"
+            cursor.execute(sql, (post['user_id']))
+            post['user_name'] = cursor.fetchone()['name']
+        else:
+            post['user_name'] = ""
 
     # 데이터베이스, 커서 연결 해제
     cursor.close()
@@ -107,19 +122,28 @@ def index():
         "has_next": has_next, # 이전 버튼 여부, 이전 페이지 그룹으로 이동
         "has_prev": has_prev # 다음 버튼 여부, 다음 페이지 그룹으로 이동
     }
-    return render_template("pages/index.html", posts=posts, search_info={"search": search, "type": search_type}, pagination=pagination)
+
+    return render_template("pages/index.html", user=user, posts=posts, search_info={"search": search, "type": search_type}, pagination=pagination)
 
 @posts_app.route('/view/<int:post_id>', methods=['GET'])
+@jwt_required()
 def view(post_id):
 
     # 데이터베이스 연결자 및 커서 생성
     conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
+    # 나의 정보 조회
+    sql=f"""
+    SELECT * FROM users WHERE id = %s
+    """
+    cursor.execute(sql, (get_jwt_identity()))
+    user = cursor.fetchone()
+
     # 게시글 검색 질의 수행
     sql = f"""
     SELECT 
-        posts.id as post_id, title, content, name, posts.created_at
+        posts.id as post_id, title, content, name, posts.created_at, profile_name, users.id as user_id
     FROM 
         posts 
     LEFT JOIN 
@@ -148,14 +172,26 @@ def view(post_id):
     if not post:
         response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
 
-    return render_template("pages/detail.html", post=post, upload_list=upload_list, response=response)
+    return render_template("pages/detail.html", user=user, post=post, upload_list=upload_list, response=response)
 
 @posts_app.route('/write', methods=['GET', 'POST'])
 @jwt_required()
 def write():
     if request.method == 'GET':
+
+        # 데이터베이스 연결자 및 커서 생성
+        conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # 나의 정보 조회
+        sql=f"""
+        SELECT * FROM users WHERE id = %s
+        """
+        cursor.execute(sql, (get_jwt_identity()))
+        user = cursor.fetchone()
+
         # GET 요청 시 글쓰기 페이지 렌더링
-        return render_template("pages/write.html")
+        return render_template("pages/write.html", user=user)
     else:
         try:
             title = request.form['form-title'].strip() # 제목, 좌우 공백 제거
@@ -234,6 +270,13 @@ def update(post_id):
     conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
+    # 나의 정보 조회
+    sql=f"""
+    SELECT * FROM users WHERE id = %s
+    """
+    cursor.execute(sql, (get_jwt_identity()))
+    user = cursor.fetchone()
+
     # 게시글 검색 질의 + 본인 글 확인 수행
     sql = f"""
     SELECT 
@@ -250,13 +293,12 @@ def update(post_id):
     
     # 조회된 게시글 정보 가져오기
     post = cursor.fetchone()
-
     print(post)
 
     try:
         # 조회된 게시글이 없는 경우
         if not post:
-            return render_template("pages/update.html", post=post, response={"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"})
+            return render_template("pages/update.html", user=user, post=post, response={"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"})
 
         # 조회된 게시글이 있는 경우
         if request.method == 'GET':
@@ -269,7 +311,7 @@ def update(post_id):
             upload_list = cursor.fetchall()
 
             # GET 요청 시 글수정 페이지 렌더링
-            return render_template("pages/update.html", post=post, upload_list=upload_list)
+            return render_template("pages/update.html", user=user, post=post, upload_list=upload_list)
         else:
 
             try:

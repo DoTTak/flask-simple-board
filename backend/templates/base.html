@@ -10,10 +10,15 @@
                 <h1 onclick="location.href='/'">LOGO</h1>
             </div>
             <div id="profile-area" onclick="location.href='/profile'">
-                <div id="profile-img">
-                </div>
+                <img id="profile-img" src="
+                {%if user.profile_name %}
+                {{ url_for('users.image_serve', filename = user.profile_name ) }}
+                {% else %}
+                /static/no-profile.png
+                {% endif %}
+                " alt="" srcset="">
                 <div id="profile-info">
-                    <p>DoTTak</p>
+                    <p>{{ user.name }}</p>
                 </div>
             </div>
             <div id="sidebar">
