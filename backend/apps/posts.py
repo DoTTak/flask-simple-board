@@ -129,6 +129,9 @@ def index():
 @jwt_required()
 def view(post_id):
 
+    if session.get('now_view', None) != post_id:
+        session.clear()
+
     # 데이터베이스 연결자 및 커서 생성
     conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -177,7 +180,6 @@ def view(post_id):
                 session[f'view_{post_id}'] = True
 
             if session.get(f'view_{post_id}', None):
-                session.clear()
                 response = {"status": "success", "msg": "", "redirect_url": ""}
                 return render_template("pages/detail.html", user=user, post=post, upload_list=upload_list, response=response)
             else:
@@ -201,6 +203,7 @@ def view(post_id):
 
             if post['password'] == password:
                 session[f'view_{post_id}'] = True
+                session[f'now_view'] = post_id
                 data = {"result": True}
                 response = {"status": "success", "msg": "확인을 누르시면 페이지가 이동됩니다.", "redirect_url": f"/posts/view/{post_id}", "data": data}
             else:

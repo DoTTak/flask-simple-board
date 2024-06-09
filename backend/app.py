@@ -94,6 +94,7 @@ def refresh_expiring_jwts(response):
         return response
 
 @app.route('/download/<int:upload_id>')
+@jwt_required()
 def download(upload_id):
 
     # 데이터베이스 연결자 및 커서 생성
@@ -106,8 +107,19 @@ def download(upload_id):
     cursor.execute(sql, (upload_id))
     file_info = cursor.fetchone()
 
+    # 자신의 파일인지 검증
+    sql=f"""
+    SELECT user_id FROM posts WHERE id = %s
+    """
+    cursor.execute(sql, (file_info['post_id']))
+    post_info = cursor.fetchone()
     cursor.close()
     conn.close()
+
+    # 세션이 없거나자신의 파일도 아닌 경우 리다이렉트
+    if not session.get(f"view_{file_info['post_id']}", None):
+        if post_info['user_id'] != get_jwt_identity():
+            return redirect("/")
 
     # 경로 문제(맨 앞 디렉터리 경로 제외)
     file_path = file_info['file_path']
