@@ -10,6 +10,20 @@
     padding: 10px 10px;
     text-align: center;
 }
+#main-area > #content-area > #content > table td > .secure-post{
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+#main-area > #content-area > #content > table td > .secure-post > p{
+    background: #cccccc;
+    padding: 3px 5px;
+    font-size: 0.6em;
+    border-radius: 10px;
+    color: #636363;
+    font-weight: bold;
+}
 #main-area > #content-area > #content > table td:nth-child(2){
     text-align: left;
 }

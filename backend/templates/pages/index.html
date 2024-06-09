@@ -37,8 +37,18 @@
                 <td></td><td>제목1</td><td>2024-05-27</td><td>작성자1</td>
             </tr>
             #}
-            <tr onclick="location.href='/posts/view/{{ post.id }}'">
-                <td>{{ post.id }}</td><td>{{ post.title }}</td><td>{{ post.created_at }}</td><td>{{ post.user_name }}</td>
+
+            <tr onclick="goPost('/posts/view/{{ post.id }}',{% if post.password %}{% if post.user_id == user.id %} false {% else %} true {% endif %}{%else%}false{%endif%})">
+                <td>{{ post.id }}</td><td>
+                    {% if post.password %}
+                        <div class="secure-post">
+                            {{ post.title }}
+                            <p>비밀글</p>
+                        </div>
+                    {% else %}
+                        {{ post.title }}
+                    {% endif %}
+                </td><td>{{ post.created_at }}</td><td>{{ post.user_name }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -58,4 +68,27 @@
 <div id="content-bottom-menu">
     <button onclick="location.href='/posts/write'">글쓰기</button>
 </div>
+{% endblock %}
+
+{% block custom_script %}
+<script>
+    function goPost(url, is_password){
+        if(is_password){
+            var formData = new FormData();
+            var password = prompt("비밀번호를 입력해주세요.(6자리)")
+            formData.append("password", password)
+            ajax_form("POST", url, formData, "{{ request.cookies.csrf_access_token }}", function(response){
+                if(response.msg){
+                    alert(response.msg)
+                }
+                if(response.data.result){
+                    location.href=response.redirect_url
+                }
+            })
+            console.warn(url, is_password)
+        }else{
+            location.href=url
+        }
+    }
+</script>
 {% endblock %}

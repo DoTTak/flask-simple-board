@@ -4,7 +4,7 @@ import pymysql
 import config
 import uuid
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, Blueprint
+from flask import Flask, render_template, request, Blueprint, session
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 
 PAGE_POST_LIMIT = 10 # 페이지 당 보여질 게시글의 갯수
@@ -125,7 +125,7 @@ def index():
 
     return render_template("pages/index.html", user=user, posts=posts, search_info={"search": search, "type": search_type}, pagination=pagination)
 
-@posts_app.route('/view/<int:post_id>', methods=['GET'])
+@posts_app.route('/view/<int:post_id>', methods=['GET', 'POST'])
 @jwt_required()
 def view(post_id):
 
@@ -143,7 +143,7 @@ def view(post_id):
     # 게시글 검색 질의 수행
     sql = f"""
     SELECT 
-        posts.id as post_id, title, content, name, posts.created_at, profile_name, users.id as user_id
+        posts.id as post_id, title, content, name, posts.created_at, profile_name, users.id as user_id, posts.password as password
     FROM 
         posts 
     LEFT JOIN 
@@ -156,7 +156,7 @@ def view(post_id):
     
     # 조회된 게시글 정보 가져오기
     post = cursor.fetchone()
-    
+
     # 업로드 파일 조회
     sql = f"""
     SELECT id as file_id, file_name FROM uploads WHERE post_id = %s
@@ -168,11 +168,49 @@ def view(post_id):
     cursor.close()
     conn.close()
 
-    response = {"status": "success", "msg": "", "redirect_url": ""}
-    if not post:
-        response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
+    if request.method == 'GET':
 
-    return render_template("pages/detail.html", user=user, post=post, upload_list=upload_list, response=response)
+        if post['password']:
+            
+            # 자신의 글일 경우 pass 처리
+            if post['user_id'] == get_jwt_identity():
+                session[f'view_{post_id}'] = True
+
+            if session.get(f'view_{post_id}', None):
+                session.clear()
+                response = {"status": "success", "msg": "", "redirect_url": ""}
+                return render_template("pages/detail.html", user=user, post=post, upload_list=upload_list, response=response)
+            else:
+                session.clear()
+                response = {"status": "error", "msg": "비밀번호를 입력해주세요.", "redirect_url": "/"}
+                return render_template("pages/detail.html", user=user, post=[], upload_list=[], response=response)
+        else:
+            session.clear()
+            response = {"status": "success", "msg": "", "redirect_url": ""}
+            if not post:
+                response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
+            return render_template("pages/detail.html", user=user, post=post, upload_list=upload_list, response=response)
+    else:
+
+        if post['password']:
+            try:
+                password = request.form['password']
+            except:
+                data = {"result": False}
+                response = {"status": "success", "msg": "비밀번호를 잘못 입력하셨습니다.", "redirect_url": "", "data": data}
+
+            if post['password'] == password:
+                session[f'view_{post_id}'] = True
+                data = {"result": True}
+                response = {"status": "success", "msg": "확인을 누르시면 페이지가 이동됩니다.", "redirect_url": f"/posts/view/{post_id}", "data": data}
+            else:
+                data = {"result": False}
+                response = {"status": "success", "msg": "비밀번호를 잘못 입력하셨습니다.", "redirect_url": "", "data": data}
+        else:
+            response = {"status": "error", "msg": "잘못된 접근입니다.", "redirect_url": ""}
+        
+        return response
+
 
 @posts_app.route('/write', methods=['GET', 'POST'])
 @jwt_required()
@@ -196,6 +234,7 @@ def write():
         try:
             title = request.form['form-title'].strip() # 제목, 좌우 공백 제거
             content = request.form['form-content'].strip() # 내용, 좌우 공백 제거
+            password = request.form.get('form-password', None) # 선택사항
         except KeyError:
             # 요청 데이터가 없는 경우 처리
             return {"status": "error", "msg": "입력값을 확인해주세요."}
@@ -211,20 +250,26 @@ def write():
             if not ("." in upload_file.filename and \
                     upload_file.filename.rsplit('.', 1)[1].lower() in list(config.ALLOWED_EXTENSIONS) + ["pdf"]):
                     return {"status": "error", "msg": "파일 확장자를 확인해주세요."}
-        
 
         # 데이터베이스 연결자 및 커서 생성
         conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         
+        # 비밀번호 비어있을 경우 NULL 처리
+        if not password:
+            password = None
+        else:
+            if len(password) != 6:
+                return {"status": "error", "msg": "비밀번호는 6자리로 입력해주세요."}
+
         # 게시글 추가 질의
         sql = f"""
         INSERT INTO
-            `posts` (`title`, `content`, `user_id`)
+            `posts` (`title`, `content`, `user_id`, `password`)
         VALUES
-            (%s, %s, %s);
+            (%s, %s, %s, %s);
         """
-        cursor.execute(sql, (title, content, get_jwt_identity()))
+        cursor.execute(sql, (title, content, get_jwt_identity(), password))
         conn.commit()
 
         # 방금 추가한 게시글 ID 가져오는 질의
@@ -280,7 +325,7 @@ def update(post_id):
     # 게시글 검색 질의 + 본인 글 확인 수행
     sql = f"""
     SELECT 
-        posts.id as post_id, title, content, name, posts.created_at
+        posts.id as post_id, title, content, name, posts.created_at, posts.password
     FROM 
         posts 
     LEFT JOIN 
@@ -317,6 +362,7 @@ def update(post_id):
             try:
                 title = request.form['form-title'].strip() # 제목
                 content = request.form['form-content'].strip() # 내용
+                password = request.form.get('form-password', None) # 선택사항
             except:
                 # 요청 데이터가 없는 경우 처리
                 return {"status": "error", "msg": "입력값을 확인해주세요."}
@@ -332,6 +378,13 @@ def update(post_id):
                 if not ("." in upload_file.filename and \
                     upload_file.filename.rsplit('.', 1)[1].lower() in list(config.ALLOWED_EXTENSIONS) + ["pdf"]):
                     return {"status": "error", "msg": "파일 확장자를 확인해주세요."}
+            
+            # 비밀번호 비어있을 경우 NULL 처리
+            if not password:
+                password = None
+            else:
+                if len(password) != 6:
+                    return {"status": "error", "msg": "비밀번호는 6자리로 입력해주세요."}
 
             # 파일 업로드 처리
             for upload_file in request.files.getlist('file_list'):
@@ -357,11 +410,12 @@ def update(post_id):
                 `posts`
             SET
                 `title` = %s,
-                `content` = %s
+                `content` = %s,
+                `password` = %s
             WHERE
                 `id` = %s
             """
-            cursor.execute(sql, (title, content, post_id))
+            cursor.execute(sql, (title, content, password, post_id))
             conn.commit()
 
             cursor.close()

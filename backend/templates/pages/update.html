@@ -26,6 +26,10 @@
             <textarea name="form-content" id="form-content" placeholder="여기에 내용을 입력하세요.">{{ post.content }}</textarea>
         </div>
         <div class="form-item">
+            <label for="form-password">비밀번호</label>
+            <input type="password" minlength="6" maxlength="6" name="form-password" id="form-password" value="{{ post.password }}" placeholder="비밀글 작성 시 비밀번호를 입력하세요. (6자리 입력)">
+        </div>
+        <div class="form-item">
             <div id="form-files-area">
                 <div class="form-files-top">
                     <span id="form-files-label">첨부 파일</span>
@@ -153,6 +157,8 @@ function submitForm() {
     formData.append("form-title", title)
     var content = document.getElementById('form-content').value
     formData.append("form-content", content)
+    var password = document.getElementById('form-password').value
+    formData.append("form-password", password)
     
     ajax_form("POST", "/posts/update/{{post.post_id}}", formData, "{{ request.cookies.csrf_access_token }}", function(response){
         if(response.msg){
