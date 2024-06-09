@@ -161,6 +161,13 @@ def index():
     # Document Root 접속 시 posts로 이동
     return redirect('/posts')
 
+@app.route('/logout', methods=['GET'])
+def logout():
+    response = {"status": "success", "msg": "로그아웃", "redirect_url": "/login"}
+    resp = make_response(render_template('pages/login.html', response=response))
+    unset_jwt_cookies(resp)
+    return resp
+    
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':

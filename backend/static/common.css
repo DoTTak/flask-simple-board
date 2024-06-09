@@ -110,6 +110,8 @@ input, textarea {
     flex :1;
     padding: 20px 0px 0px 20px;
     font-size: 15px;
+    display: flex;
+    justify-content: space-between;
 }
 #side-area > #sidebar > .side-item{
     height:30px;
@@ -130,6 +132,10 @@ input, textarea {
     background-color: #f2f6ff;
     color: #2a61ff;
     border-left: 3px solid #2a61ff;
+}
+#side-area > #sidebar > .side-item.logout{
+    margin-bottom: 40px;
+    background: #ffffff;
 }
 
 /* Main Area */
