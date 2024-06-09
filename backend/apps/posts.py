@@ -170,6 +170,12 @@ def write():
 
         if len(request.files.getlist('file_list')) > 5:
             return {"status": "error", "msg": "파일은 최대 5개만 업로드 가능합니다."}
+        
+        for upload_file in request.files.getlist('file_list'):
+            if not ("." in upload_file.filename and \
+                    upload_file.filename.rsplit('.', 1)[1].lower() in list(config.ALLOWED_EXTENSIONS) + ["pdf"]):
+                    return {"status": "error", "msg": "파일 확장자를 확인해주세요."}
+        
 
         # 데이터베이스 연결자 및 커서 생성
         conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
@@ -191,7 +197,9 @@ def write():
 
         # 파일 업로드 처리
         for upload_file in request.files.getlist('file_list'):
+            
             file_name = secure_filename(upload_file.filename)
+            
             # 파일명 중복 안되게끔 처리
             new_file_name = str(uuid.uuid4()) + "_" + file_name
             file_path = os.path.join(config.UPLOAD_DIR, new_file_name)
@@ -277,6 +285,11 @@ def update(post_id):
 
             if len(request.files.getlist('file_list')) > 5:
                 return {"status": "error", "msg": "파일은 최대 5개만 업로드 가능합니다."}
+
+            for upload_file in request.files.getlist('file_list'):
+                if not ("." in upload_file.filename and \
+                    upload_file.filename.rsplit('.', 1)[1].lower() in list(config.ALLOWED_EXTENSIONS) + ["pdf"]):
+                    return {"status": "error", "msg": "파일 확장자를 확인해주세요."}
 
             # 파일 업로드 처리
             for upload_file in request.files.getlist('file_list'):
