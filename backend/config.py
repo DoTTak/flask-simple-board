@@ -7,6 +7,7 @@ UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 FLASK_PORT = os.getenv("FLASK_PORT", 80)
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", 1)
 SECRET_KEY = os.getenv("SECRET_KEY", "SECRET_KEY")
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 # 이메일 정보
 MAIL_SERVER = 'smtp.gmail.com'

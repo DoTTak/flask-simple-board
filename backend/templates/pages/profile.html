@@ -6,30 +6,40 @@
 
 {% block content %}
 <div id="content-top-menu" class="between border">
-    <h2>DoTTak 프로필</h2>
+    <h2>{{ user.name }} 프로필</h2>
 </div>
 <div id="content">
     <div class="profile-area">
         <div class="profile-info">
             <div class="profile-item image-area">
-                <img src="/static/no-profile.png" alt="" srcset="" style="height:200px; width:200px;">
+                <img src="
+                {%if user.profile_name %}
+                {{ url_for('users.image_serve', filename = user.profile_name ) }}
+                {% else %}
+                /static/no-profile.png
+                {% endif %}
+                " alt="" srcset="" style="height:200px; width:200px;">
             </div>
             <div class="profile-item">
                 <p class="profile-item-key">이름</p>
-                <p class="profile-item-value">DoTTak</p>
+                <p class="profile-item-value">{{ user.name }}</p>
             </div>
             <div class="profile-item">
                 <p class="profile-item-key">학교</p>
-                <p class="profile-item-value">빡공팟</p>
+                <p class="profile-item-value">{{ user.school }}</p>
             </div>
             <div class="profile-item">
                 <p class="profile-item-key">자기소개</p>
-                <p class="profile-item-value" style="height:100px">안녕하세요. 저는 DoTTak 입니다.</p>
+                <p class="profile-item-value" style="height:100px">
+                    {% if user.introduce %}
+                    {{ user.introduce }}
+                    {% endif %}
+                </p>
             </div>
         </div>
     </div>
 </div>
 <div id="content-bottom-menu">
-    <button>수정하기</button>
+    <button onclick="location.href='/profile/edit'">수정하기</button>
 </div>
 {% endblock %}

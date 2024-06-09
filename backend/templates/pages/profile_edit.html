@@ -9,50 +9,99 @@
     <h2>DoTTak 프로필 수정</h2>
 </div>
 <div id="content">
-    <form action="" class="profile-area">
+    <form class="profile-area" id="form-edit" onsubmit="submitForm();return false;">
         <div class="form-item image-area">
-            <img src="/static/no-profile.png" alt="" srcset="">
+            <img id="profile-img-a" src="
+                {%if user.profile_name %}
+                {{ url_for('users.image_serve', filename = user.profile_name ) }}
+                {% else %}
+                /static/no-profile.png
+                {% endif %}
+                " alt="" srcset="" style="height:200px; width:200px;">
             <div class="image-form">
                 <label for="form-image">이미지 선택</label>
-                <input type="file" name="form-image" id="form-image">
-                <input type="button" value="변경하기">
+                <input type="file" onchange="addFile(this, event)" name="form-image" id="form-image">
             </div>
         </div>
         <div class="form-item">
             <label for="form-name">이름</label>
-            <input type="text" name="form-name" id="form-name" placeholder="이름을 입력하세요.">
+            <input type="text" name="form-name" id="form-name" placeholder="이름을 입력하세요." value="{{ user.name }}">
         </div>
         <div class="form-item">
             <label for="form-school">학교</label>
-            <input type="text" name="form-school" id="form-school" placeholder="학교를 입력하세요.">
+            <input type="text" name="form-school" id="form-school" placeholder="학교를 입력하세요." value="{{ user.school }}">
         </div>
         <div class="form-item">
             <label for="form-text">자기소개</label>
-            <textarea name="form-text" id="form-text" placeholder="여기에 자기소개를 입력하세요."></textarea>
+            <textarea name="form-text" id="form-text" placeholder="여기에 자기소개를 입력하세요.">{% if user.introduce %}{{ user.introduce }}{% endif %}</textarea>
         </div>
     </form>
-    <!-- <div class="profile-area">
-        <div class="profile-info">
-            <div class="profile-item image-area">
-                <img src="static/no-profile.png" alt="" srcset="">
-            </div>
-            <div class="profile-item">
-                <p class="profile-item-key">이름</p>
-                <p class="profile-item-value">DoTTak</p>
-            </div>
-            <div class="profile-item">
-                <p class="profile-item-key">학교</p>
-                <p class="profile-item-value">빡공팟</p>
-            </div>
-            <div class="profile-item">
-                <p class="profile-item-key">자기소개</p>
-                <p class="profile-item-value" style="height:100px">안녕하세요. 저는 DoTTak 입니다.</p>
-            </div>
-        </div>
-    </div> -->
 </div>
 <div id="content-bottom-menu">
     <button onclick="history.go(-1)">취소</button>
-    <button>저장하기</button>
+    <button type="submit" form="form-edit">저장하기</button>
 </div>
+{% endblock %}
+
+{% block custom_script %}
+<script>
+
+var profile_img = null;
+
+function addFile(obj, event){
+    if(validation(obj.files[0])){
+        profile_img = obj.files[0]
+        var image = window.URL.createObjectURL(profile_img);
+        var elm_profile_img = document.getElementById("profile-img-a")
+        elm_profile_img.src = image
+        elm_profile_img.onload = function(){
+            URL.revokeObjectURL(image)
+        }
+    }else{
+        profile_img = null;
+        document.querySelector("input[type=file]").value = "";
+    }
+}
+
+function validation(obj){
+    const fileTypes = ['application/pdf', 'image/gif', 'image/jpeg', 'image/png']; // PDF, 이미지만 추가 가능
+    if (obj.name.length > 100) {
+        alert("파일명이 100자 이상인 파일은 제외되었습니다.");
+        return false;
+    } else if (obj.size > (100 * 1024 * 1024)) {
+        alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
+        return false;
+    } else if (obj.name.lastIndexOf('.') == -1) {
+        alert("확장자가 없는 파일은 제외되었습니다.");
+        return false;
+    } else if (!fileTypes.includes(obj.type)) {
+        alert("첨부가 불가능한 파일은 제외되었습니다.");
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function submitForm() {
+    var formData = new FormData();
+    formData.append("profile_img", profile_img);
+
+    var name = document.getElementById('form-name').value
+    formData.append("form-name", name)
+    var school = document.getElementById('form-school').value
+    formData.append("form-school", school)
+    var text = document.getElementById('form-text').value
+    formData.append("form-text", text)
+    
+    ajax_form("POST", "/profile/edit", formData, "{{ request.cookies.csrf_access_token }}", function(response){
+        console.log(response)
+        if(response.msg){
+            alert(response.msg)
+        }
+        if(response.redirect_url){
+            location.href=response.redirect_url
+        }
+    })
+}
+</script>
 {% endblock %}

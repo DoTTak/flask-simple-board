@@ -91,7 +91,10 @@ input, textarea {
     border-radius: 50px;
     margin: 0px 10px 0px 30px; /* side-item 좌측 여백이 20px이라 10px + 20px */
     width: 180px;
-    align-self: center;
+    cursor: pointer
+}
+#side-area > #profile-area:hover {
+    background-color: #f7f7f8;
 }
 #side-area > #profile-area > #profile-info{
     font-weight: bold;
