@@ -109,17 +109,19 @@ def download(upload_id):
 
     # 자신의 파일인지 검증
     sql=f"""
-    SELECT user_id FROM posts WHERE id = %s
+    SELECT user_id, password FROM posts WHERE id = %s
     """
     cursor.execute(sql, (file_info['post_id']))
     post_info = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    # 세션이 없거나자신의 파일도 아닌 경우 리다이렉트
-    if not session.get(f"view_{file_info['post_id']}", None):
-        if post_info['user_id'] != get_jwt_identity():
-            return redirect("/")
+    # 비밀번호 걸린 게시글의 파일 여부 확인
+    if post_info['password']:
+        # 세션이 없거나자신의 파일도 아닌 경우 리다이렉트
+        if not session.get(f"view_{file_info['post_id']}", None):
+            if post_info['user_id'] != get_jwt_identity():
+                return redirect("/")
 
     # 경로 문제(맨 앞 디렉터리 경로 제외)
     file_path = file_info['file_path']
