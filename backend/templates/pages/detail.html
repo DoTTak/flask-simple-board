@@ -8,7 +8,7 @@
 {% block content %}
 <div id="content-top-menu" class="between border">
     <h2>{{ post.title }}</h2>
-    <div id="content-info" style="cursor:pointer;" onclick="location.href='{{ url_for('users.profile_view', user_id=post.user_id) }}'">
+    <div id="content-info" style="cursor:pointer;" onclick="location.href='{% if post %}{{ url_for('users.profile_view', user_id=post.user_id) }}{% endif %}'">
         <img id="profile-img" src="
         {%if post.profile_name %}
         {{ url_for('users.image_serve', filename = post.profile_name ) }}

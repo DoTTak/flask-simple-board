@@ -160,6 +160,10 @@ def view(post_id):
     # 조회된 게시글 정보 가져오기
     post = cursor.fetchone()
 
+    if not post:
+        response = {"status": "error", "msg": "존재하지 않는 게시글 입니다.", "redirect_url": "/posts"}
+        return render_template("pages/detail.html", user=user, post=[], upload_list=[], response=response)
+
     # 업로드 파일 조회
     sql = f"""
     SELECT id as file_id, file_name FROM uploads WHERE post_id = %s

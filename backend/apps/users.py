@@ -104,7 +104,7 @@ def profile_edit():
                 return {"status": "error", "msg": "파일 확장자를 확인해주세요."}
 
             file_name = secure_filename(profile_img.filename)
-            new_file_name = "profile" + "_" + str(user['id']) + "." + file_name.rsplit('.', 1)[1].lower()
+            new_file_name = "profile" + "_" + str(user['id']) + "." + file_name.lower()
             file_path = os.path.join(config.UPLOAD_DIR, new_file_name)
             profile_img.save(file_path)
 
