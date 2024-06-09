@@ -25,6 +25,36 @@ def profile():
 
     return render_template("pages/profile.html", user=user)
 
+@users_app.route('/view/<int:user_id>', methods=['GET'])
+@jwt_required()
+def profile_view(user_id):
+
+    # 데이터베이스 연결자 및 커서 생성
+    conn = pymysql.connect(host=config.DB_HOST, user=config.DB_USER, password =config.DB_PASSWORD, db=config.DB_DATABSE, charset='utf8')
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # 나의 정보 조회
+    sql=f"""
+    SELECT * FROM users WHERE id = %s
+    """
+    cursor.execute(sql, (get_jwt_identity()))
+    user = cursor.fetchone()
+    
+    # 타인 정보 조회
+    sql=f"""
+    SELECT * FROM users WHERE id = %s
+    """
+    cursor.execute(sql, (user_id))
+    profile = cursor.fetchone()
+
+    if not profile:
+        response = {"status": "error", "msg": "존재하지 않는 사용자 입니다", "redirect_url": "/"} 
+    else:
+        response = {}
+
+    return render_template("pages/profile_view.html", user=user, profile=profile, response=response)
+
+
 @users_app.route('/edit', methods=['GET', 'POST'])
 @jwt_required()
 def profile_edit():

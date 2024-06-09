@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<h2>Profile</h2>
+{% endblock %}
+
+{% block content %}
+<div id="content-top-menu" class="between border">
+    <h2>{{ profile.name }} 프로필</h2>
+</div>
+<div id="content">
+    <div class="profile-area">
+        <div class="profile-info">
+            <div class="profile-item image-area">
+                <img src="
+                {%if profile.profile_name %}
+                {{ url_for('users.image_serve', filename = profile.profile_name ) }}
+                {% else %}
+                /static/no-profile.png
+                {% endif %}
+                " alt="" srcset="" style="height:200px; width:200px;">
+            </div>
+            <div class="profile-item">
+                <p class="profile-item-key">이름</p>
+                <p class="profile-item-value">{{ profile.name }}</p>
+            </div>
+            <div class="profile-item">
+                <p class="profile-item-key">학교</p>
+                <p class="profile-item-value">{{ profile.school }}</p>
+            </div>
+            <div class="profile-item">
+                <p class="profile-item-key">자기소개</p>
+                <p class="profile-item-value" style="height:100px">
+                    {% if profile.introduce %}
+                    {{ profile.introduce }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="content-bottom-menu">
+</div>
+{% endblock %}
